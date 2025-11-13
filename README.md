@@ -10,7 +10,6 @@ Here is the content of your LearnOuts.com group coursework page formatted in **M
 
 
 **This is a group project:**  
-- Groups should consist of **3 students**
 - Recommended: Use `git` for collaboration and version tracking  
 - All students have accounts on QM GitHub: [https://github.qmul.ac.uk](https://github.qmul.ac.uk)
 
@@ -53,12 +52,6 @@ Your group should use one of these APIs based on your group number:
 
 | Web API                 | URL                                                        | Condition                       |
 |-------------------------|------------------------------------------------------------|----------------------------------|
-| TheMealDB               | [API Link](https://www.themealdb.com/api.php)              | group_number `mod` 7 == 0        |
-| TVMaze                  | [API Link](https://www.tvmaze.com/api)                     | group_number `mod` 7 == 1        |
-| TMDB                    | [API Link](https://developer.themoviedb.org/reference/intro/getting-started) | group_number `mod` 7 == 2        |
-| UK Police               | [API Link](https://data.police.uk/docs/)                   | group_number `mod` 7 == 3        |
-| CoinCap                 | [API Link](https://docs.coincap.io/?ref=public_apis)       | group_number `mod` 7 == 4        |
-| MusicBrainz             | [API Link](https://musicbrainz.org/doc/MusicBrainz_API)    | group_number `mod` 7 == 5        |
 | Transport for London    | [API Link](https://api.tfl.gov.uk/)                        | group_number `mod` 7 == 6        |
 
 ***
