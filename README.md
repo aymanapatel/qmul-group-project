@@ -7,7 +7,7 @@
 1. Run build command
 
 ```shell
-stack exec tfl-all
+stack build
 ```
 
 2. Run 
