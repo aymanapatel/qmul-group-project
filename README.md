@@ -2,6 +2,25 @@
 # Group Coursework — ECS713U/P Functional Programming 2025/26
 
 
+## Building project guidelines
+
+1. Run build command
+
+```shell
+stack exec tfl-all
+```
+
+2. Run 
+
+```shell
+stack exec tfl-app
+```
+
+## Instructions
+
+- Remove `.stack-work` before putting the zip
+- Do not touch `tfl-app.cabal`
+
 [Project specification](https://learnouts.com/student/72/cw/121/)
 
 
