@@ -13,7 +13,14 @@ stack build
 2. Run 
 
 ```shell
-stack exec tfl-app
+stack run -- database
+```
+
+3. Generate documenatation
+
+```shell
+stack haddock --haddock-arguments="--odir=docs"
+stack haddock --open   
 ```
 
 ## Instructions

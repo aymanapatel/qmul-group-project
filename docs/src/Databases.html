@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DeriveGeneric #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Databases.html"><span class="hs-identifier">Databases</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Types.html#User"><span class="hs-identifier">User</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Databases.html#insertUser"><span class="hs-identifier">insertUser</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Databases.html#getAllUsers"><span class="hs-identifier">getAllUsers</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Databases.html#deleteAllUsers"><span class="hs-identifier">deleteAllUsers</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Databases.html#database"><span class="hs-identifier">database</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Databases.html#initDB"><span class="hs-identifier">initDB</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">bracket</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Database.SQLite.Simple</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Database.SQLite.Simple.FromRow</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Database.SQLite.Simple.ToRow</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">unpack</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">hFlush</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">stdout</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Fetch.html"><span class="hs-identifier">Fetch</span></a></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Types.html"><span class="hs-identifier">Types</span></a></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromRow</span></span><span> </span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-16"></span><span>  </span><span id="local-6989586621679125505"><span class="annot"><span class="annottext">fromRow :: RowParser User
+</span><a href="#local-6989586621679125505"><span class="hs-identifier hs-var hs-var hs-var">fromRow</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Text -&gt; Text -&gt; User
+</span><a href="Types.html#User"><span class="hs-identifier hs-var">User</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Text -&gt; Text -&gt; User)
+-&gt; RowParser Int -&gt; RowParser (Text -&gt; Text -&gt; User)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">RowParser Int
+forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span> </span><span class="annot"><span class="annottext">RowParser (Text -&gt; Text -&gt; User)
+-&gt; RowParser Text -&gt; RowParser (Text -&gt; User)
+forall a b. RowParser (a -&gt; b) -&gt; RowParser a -&gt; RowParser b
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">RowParser Text
+forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span> </span><span class="annot"><span class="annottext">RowParser (Text -&gt; User) -&gt; RowParser Text -&gt; RowParser User
+forall a b. RowParser (a -&gt; b) -&gt; RowParser a -&gt; RowParser b
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">RowParser Text
+forall a. FromField a =&gt; RowParser a
+</span><span class="hs-identifier hs-var">field</span></span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToRow</span></span><span> </span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-19"></span><span>  </span><span id="local-6989586621679125519"><span class="annot"><span class="annottext">toRow :: User -&gt; [SQLData]
+</span><a href="#local-6989586621679125519"><span class="hs-identifier hs-var hs-var hs-var">toRow</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span id="local-6989586621679125521"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679125521"><span class="hs-identifier hs-var">uid</span></a></span></span><span> </span><span id="local-6989586621679125522"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679125522"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679125523"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679125523"><span class="hs-identifier hs-var">email</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Text, Text) -&gt; [SQLData]
+forall a. ToRow a =&gt; a -&gt; [SQLData]
+</span><span class="hs-identifier hs-var">toRow</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679125521"><span class="hs-identifier hs-var">uid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679125522"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679125523"><span class="hs-identifier hs-var">email</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><span class="hs-comment">-- | Inserts a user into the database</span></span><span>
+</span><span id="line-22"></span><span class="annot"><a href="Databases.html#insertUser"><span class="hs-identifier hs-type">insertUser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Connection</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span id="insertUser"><span class="annot"><span class="annottext">insertUser :: Connection -&gt; User -&gt; IO ()
+</span><a href="Databases.html#insertUser"><span class="hs-identifier hs-var hs-var">insertUser</span></a></span></span><span> </span><span id="local-6989586621679125524"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125524"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span id="local-6989586621679125525"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125525"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><span class="annottext">Connection -&gt; Query -&gt; User -&gt; IO ()
+forall q. ToRow q =&gt; Connection -&gt; Query -&gt; q -&gt; IO ()
+</span><span class="hs-identifier hs-var">execute</span></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125524"><span class="hs-identifier hs-var">conn</span></a></span><span> </span><span class="annot"><span class="annottext">Query
+</span><span class="hs-string">&quot;INSERT INTO users (id, name, email) VALUES (?, ?, ?)&quot;</span></span><span> </span><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125525"><span class="hs-identifier hs-var">user</span></a></span><span>
+</span><span id="line-25"></span><span>  </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; IO ()) -&gt; [Char] -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;&#10003; Inserted user: &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Char]
+forall a. Show a =&gt; a -&gt; [Char]
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; Text
+</span><a href="Types.html#name"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125525"><span class="hs-identifier hs-var">user</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="annot"><span class="hs-comment">-- | Retrieves all users from the database</span></span><span>
+</span><span id="line-28"></span><span class="annot"><a href="Databases.html#getAllUsers"><span class="hs-identifier hs-type">getAllUsers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Connection</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-29"></span><span id="getAllUsers"><span class="annot"><span class="annottext">getAllUsers :: Connection -&gt; IO [User]
+</span><a href="Databases.html#getAllUsers"><span class="hs-identifier hs-var hs-var">getAllUsers</span></a></span></span><span> </span><span id="local-6989586621679125530"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125530"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Connection -&gt; Query -&gt; IO [User]
+forall r. FromRow r =&gt; Connection -&gt; Query -&gt; IO [r]
+</span><span class="hs-identifier hs-var">query_</span></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125530"><span class="hs-identifier hs-var">conn</span></a></span><span> </span><span class="annot"><span class="annottext">Query
+</span><span class="hs-string">&quot;SELECT id, name, email FROM users&quot;</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><span class="hs-comment">-- | Deletes all users from the database</span></span><span>
+</span><span id="line-32"></span><span class="annot"><a href="Databases.html#deleteAllUsers"><span class="hs-identifier hs-type">deleteAllUsers</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Connection</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span id="deleteAllUsers"><span class="annot"><span class="annottext">deleteAllUsers :: Connection -&gt; IO ()
+</span><a href="Databases.html#deleteAllUsers"><span class="hs-identifier hs-var hs-var">deleteAllUsers</span></a></span></span><span> </span><span id="local-6989586621679125532"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125532"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><span class="annottext">Connection -&gt; Query -&gt; IO ()
+</span><span class="hs-identifier hs-var">execute_</span></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125532"><span class="hs-identifier hs-var">conn</span></a></span><span> </span><span class="annot"><span class="annottext">Query
+</span><span class="hs-string">&quot;DELETE FROM users&quot;</span></span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;&#10003; Cleared all users from database&quot;</span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="annot"><span class="hs-comment">-- | Initializes the database</span></span><span>
+</span><span id="line-38"></span><span class="annot"><a href="Databases.html#initDB"><span class="hs-identifier hs-type">initDB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Connection</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span id="initDB"><span class="annot"><span class="annottext">initDB :: Connection -&gt; IO ()
+</span><a href="Databases.html#initDB"><span class="hs-identifier hs-var hs-var">initDB</span></a></span></span><span> </span><span id="local-6989586621679125534"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125534"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-40"></span><span>  </span><span class="annot"><span class="annottext">Connection -&gt; Query -&gt; IO ()
+</span><span class="hs-identifier hs-var">execute_</span></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125534"><span class="hs-identifier hs-var">conn</span></a></span><span> </span><span class="annot"><span class="annottext">Query
+</span><span class="hs-string">&quot;CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL)&quot;</span></span><span>
+</span><span id="line-41"></span><span>  </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;&#10003; Database initialized&quot;</span></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | Main database application</span></span><span>
+</span><span id="line-44"></span><span class="annot"><a href="Databases.html#database"><span class="hs-identifier hs-type">database</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span id="database"><span class="annot"><span class="annottext">database :: IO ()
+</span><a href="Databases.html#database"><span class="hs-identifier hs-var hs-var">database</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-46"></span><span>  </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Database opening connection&quot;</span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><span class="annottext">IO Connection
+-&gt; (Connection -&gt; IO ()) -&gt; (Connection -&gt; IO ()) -&gt; IO ()
+forall a b c. IO a -&gt; (a -&gt; IO b) -&gt; (a -&gt; IO c) -&gt; IO c
+</span><span class="hs-identifier hs-var">bracket</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; IO Connection
+</span><span class="hs-identifier hs-var">open</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;users.db&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Connection -&gt; IO ()
+</span><span class="hs-identifier hs-var">close</span></span><span> </span><span class="annot"><span class="annottext">((Connection -&gt; IO ()) -&gt; IO ()) -&gt; (Connection -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679125537"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125537"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="annottext">Connection -&gt; IO ()
+</span><a href="Databases.html#initDB"><span class="hs-identifier hs-var">initDB</span></a></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125537"><span class="hs-identifier hs-var">conn</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="annottext">Connection -&gt; IO ()
+</span><a href="Databases.html#deleteAllUsers"><span class="hs-identifier hs-var">deleteAllUsers</span></a></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125537"><span class="hs-identifier hs-var">conn</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;\nFetching users from JSONPlaceholder API...&quot;</span></span><span>
+</span><span id="line-53"></span><span>    </span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="annottext">(Int -&gt; IO ()) -&gt; [Int] -&gt; IO ()
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Foldable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m ()
+</span><span class="hs-identifier hs-var">mapM_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Connection -&gt; Int -&gt; IO ()
+</span><a href="#local-6989586621679125539"><span class="hs-identifier hs-var">fetchAndStore</span></a></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125537"><span class="hs-identifier hs-var">conn</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-glyph">..</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">5</span></span><span class="hs-special">]</span><span>
+</span><span id="line-55"></span><span>    </span><span>
+</span><span id="line-56"></span><span>    </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;\nStored users in database:&quot;</span></span><span>
+</span><span id="line-57"></span><span>    </span><span id="local-6989586621679125540"><span class="annot"><a href="#local-6989586621679125540"><span class="hs-identifier hs-var">users</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Connection -&gt; IO [User]
+</span><a href="Databases.html#getAllUsers"><span class="hs-identifier hs-var">getAllUsers</span></a></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125537"><span class="hs-identifier hs-var">conn</span></a></span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">mapM_</span></span><span> </span><span class="annot"><a href="#local-6989586621679125541"><span class="hs-identifier hs-type">printUser</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679125540"><span class="hs-identifier hs-type">users</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">putStrLn</span></span><span> </span><span class="annot"><span class="hs-string">&quot;\n&#10003; Project complete!&quot;</span></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>    </span><span class="annot"><a href="#local-6989586621679125539"><span class="hs-identifier hs-type">fetchAndStore</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Connection</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>    </span><span id="local-6989586621679125539"><span class="annot"><span class="annottext">fetchAndStore :: Connection -&gt; Int -&gt; IO ()
+</span><a href="#local-6989586621679125539"><span class="hs-identifier hs-var hs-var">fetchAndStore</span></a></span></span><span> </span><span id="local-6989586621679125542"><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125542"><span class="hs-identifier hs-var">conn</span></a></span></span><span> </span><span id="local-6989586621679125543"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679125543"><span class="hs-identifier hs-var">uid</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-64"></span><span>      </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStr</span></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; IO ()) -&gt; [Char] -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Fetching user &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Char]
+forall a. Show a =&gt; a -&gt; [Char]
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679125543"><span class="hs-identifier hs-var">uid</span></a></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;... &quot;</span></span><span>
+</span><span id="line-65"></span><span>      </span><span class="annot"><span class="annottext">Handle -&gt; IO ()
+</span><span class="hs-identifier hs-var">hFlush</span></span><span> </span><span class="annot"><span class="annottext">Handle
+</span><span class="hs-identifier hs-var">stdout</span></span><span>
+</span><span id="line-66"></span><span>      </span><span id="local-6989586621679125545"><span class="annot"><a href="#local-6989586621679125545"><span class="hs-identifier hs-var">maybeUser</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO (Maybe User)
+</span><a href="Fetch.html#fetchUser"><span class="hs-identifier hs-var">fetchUser</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679125543"><span class="hs-identifier hs-var">uid</span></a></span><span>
+</span><span id="line-67"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><a href="#local-6989586621679125545"><span class="hs-identifier hs-type">maybeUser</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-68"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679125547"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125547"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Connection -&gt; User -&gt; IO ()
+</span><a href="Databases.html#insertUser"><span class="hs-identifier hs-var">insertUser</span></a></span><span> </span><span class="annot"><span class="annottext">Connection
+</span><a href="#local-6989586621679125542"><span class="hs-identifier hs-var">conn</span></a></span><span> </span><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125547"><span class="hs-identifier hs-var">user</span></a></span><span>
+</span><span id="line-69"></span><span>        </span><span class="annot"><span class="annottext">Maybe User
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Failed to fetch user&quot;</span></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span>    </span><span class="annot"><a href="#local-6989586621679125541"><span class="hs-identifier hs-type">printUser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Types.html#User"><span class="hs-identifier hs-type">User</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679125541"><span class="annot"><span class="annottext">printUser :: User -&gt; IO ()
+</span><a href="#local-6989586621679125541"><span class="hs-identifier hs-var hs-var">printUser</span></a></span></span><span> </span><span id="local-6989586621679125548"><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125548"><span class="hs-identifier hs-var">user</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-73"></span><span>      </span><span class="annot"><span class="annottext">[Char] -&gt; IO ()
+</span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; IO ()) -&gt; [Char] -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;  - &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Char]
+</span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; Text
+</span><a href="Types.html#name"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125548"><span class="hs-identifier hs-var">user</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span>
+</span><span id="line-74"></span><span>                 </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot; (&quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Char]
+</span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">User -&gt; Text
+</span><a href="Types.html#email"><span class="hs-identifier hs-var">email</span></a></span><span> </span><span class="annot"><span class="annottext">User
+</span><a href="#local-6989586621679125548"><span class="hs-identifier hs-var">user</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;)&quot;</span></span></pre></body></html>
