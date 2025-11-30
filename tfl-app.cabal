@@ -20,6 +20,18 @@ executable tfl-app
   main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     , sqlite-simple
+                     , http-conduit
+                     , aeson
+                     , bytestring
+                     , text
+                     , time
+                     , directory
+                     , split
+  other-modules:       Types
+                     , Fetch
+                     , Parse
+                     , Database
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
