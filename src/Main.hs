@@ -3,7 +3,7 @@ module Main (main) where
 import System.Environment (getArgs)
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import Data.Aeson (encode)
-import Types
+import Types()
 import Fetch
 import Parse
 import Database
