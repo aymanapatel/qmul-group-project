@@ -3,16 +3,17 @@ module Types (
     Road(..),
     RoadStatusLog(..),
     Disruption(..),
-    CoordinateEntry(..)
+    CoordinateEntry(..),
+    RoadDetailedDisplayData(..)
 ) where
 
-import Data.Aeson
+import Data.Aeson hiding (Value)
 import Data.Aeson.Types (Parser, Value)
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToRow
-import Database.SQLite.Simple (field, Only(..))
+import Database.SQLite.Simple (Only(..))
 import Data.Text (Text)
 
 -- | Represents a Road from the TfL API.
@@ -142,3 +143,16 @@ parseGeometryField v key = do
     case maybeVal of
         Just val -> return $ Just $ T.pack $ LBS.unpack $ encode val
         Nothing -> return Nothing
+
+-- | Aggregated data for displaying detailed road status.
+data RoadDetailedDisplayData = RoadDetailedDisplayData
+    { rddName :: Text
+    , rddSeverity :: Text
+    , rddDescription :: Text
+    , rddUrl :: Maybe Text
+    , rddStartDate :: Maybe Text
+    , rddEndDate :: Maybe Text
+    , rddLastUpdated :: Text
+    , rddDisruptions :: [Disruption]
+    , rddAlternativeRoutes :: [(Text, Text, Double)] -- ^ List of (ID, Name, Distance)
+    } deriving (Show, Eq)

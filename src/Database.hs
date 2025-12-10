@@ -293,17 +293,23 @@ calculateDistance lat lon bounds envelope rLat rLon =
 -- If the point is inside the bounding box, returns the point itself.
 closestPointInPolygon :: Double -> Double -> [[Double]] -> (Double, Double)
 closestPointInPolygon lat lon points = 
-    let minLat = minimum (map (!! 1) points)
-        maxLat = maximum (map (!! 1) points)
-        minLon = minimum (map head points)
-        maxLon = maximum (map head points)
+    let validPoints = [ (l, t) | [l, t] <- points ] -- Expecting [lon, lat] format implies 2 elements
+        lats = map snd validPoints
+        lons = map fst validPoints
+        
+        minLat = if null lats then lat else minimum lats
+        maxLat = if null lats then lat else maximum lats
+        minLon = if null lons then lon else minimum lons
+        maxLon = if null lons then lon else maximum lons
     in if lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon
         then (lat, lon) -- Inside the bounding box
         else 
-            -- Find the vertex with minimum squared Euclidean distance (approximation for closest vertex)
-            let squaredDist p = ( (!! 1) p - lat)^2 + (head p - lon)^2
-                closest = minimumBy (\p1 p2 -> compare (squaredDist p1) (squaredDist p2)) points
-            in ((!! 1) closest, head closest)
+            -- Find the vertex with minimum squared Euclidean distance
+            let squaredDist (ln, lt) = (lt - lat) ^ (2 :: Int) + (ln - lon) ^ (2 :: Int)
+                closest = if null validPoints 
+                          then (0, 0) 
+                          else minimumBy (\p1 p2 -> compare (squaredDist p1) (squaredDist p2)) validPoints
+            in (snd closest, fst closest)
 
 -- | Calculates the Haversine distance between two points in miles.
 haversine :: Double -> Double -> Double -> Double -> Double
@@ -315,10 +321,10 @@ haversine lat1 lon1 lat2 lon2 = d
     dLon = toRadians (lon2 - lon1)
     lat1' = toRadians lat1
     lat2' = toRadians lat2
-    a = sin (dLat / 2) ^ 2 + cos lat1' * cos lat2' * sin (dLon / 2) ^ 2
+    a = sin (dLat / 2) ^ (2 :: Int) + cos lat1' * cos lat2' * sin (dLon / 2) ^ (2 :: Int)
     c = 2 * atan2 (sqrt a) (sqrt (1 - a))
     d = r * c
 
 -- | Helper to sort by squared Euclidean distance (still useful for rough initial sorting if needed, but we use calculated Haversine now)
 sortOnDistance :: Double -> Double -> [(Text, Text, Double, Double)] -> [(Text, Text, Double, Double)]
-sortOnDistance lat lon = sortOn (\(_, _, rLat, rLon) -> (rLat - lat)^2 + (rLon - lon)^2)
+sortOnDistance lat lon = sortOn (\(_, _, rLat, rLon) -> (rLat - lat) ^ (2 :: Int) + (rLon - lon) ^ (2 :: Int))

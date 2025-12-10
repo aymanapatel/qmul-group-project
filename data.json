@@ -1,1 +1,434 @@
-[{"id":1,"roadId":"a1","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":2,"roadId":"a10","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":3,"roadId":"a12","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":4,"roadId":"a13","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":5,"roadId":"a2","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":6,"roadId":"a20","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":7,"roadId":"a205","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":8,"roadId":"a21","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":9,"roadId":"a23","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":10,"roadId":"a24","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":11,"roadId":"a3","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":12,"roadId":"a316","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":13,"roadId":"a4","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":14,"roadId":"a40","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":15,"roadId":"a406","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":16,"roadId":"a41","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":17,"roadId":"bishopsgate cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":18,"roadId":"blackwall tunnel","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":19,"roadId":"city route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":20,"roadId":"farringdon cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":21,"roadId":"inner ring","statusDescription":"Serious Delays","statusEndDate":null,"statusSeverity":"Serious","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":22,"roadId":"silvertown tunnel","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":23,"roadId":"southern river route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":24,"roadId":"western cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-11-29T21:38:53"},{"id":25,"roadId":"a1","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":26,"roadId":"a10","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":27,"roadId":"a12","statusDescription":"Serious Delays","statusEndDate":null,"statusSeverity":"Serious","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":28,"roadId":"a13","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":29,"roadId":"a2","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":30,"roadId":"a20","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":31,"roadId":"a205","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":32,"roadId":"a21","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":33,"roadId":"a23","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":34,"roadId":"a24","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":35,"roadId":"a3","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":36,"roadId":"a316","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":37,"roadId":"a4","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":38,"roadId":"a40","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":39,"roadId":"a406","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":40,"roadId":"a41","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":41,"roadId":"bishopsgate cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":42,"roadId":"blackwall tunnel","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":43,"roadId":"city route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":44,"roadId":"farringdon cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":45,"roadId":"inner ring","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":46,"roadId":"silvertown tunnel","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":47,"roadId":"southern river route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"},{"id":48,"roadId":"western cross route","statusDescription":"No Exceptional Delays","statusEndDate":null,"statusSeverity":"Good","statusStartDate":null,"timestamp":"2025-12-04T06:04:33"}]
+[
+    {
+        "id": 1,
+        "roadId": "a1",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 2,
+        "roadId": "a10",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 3,
+        "roadId": "a12",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 4,
+        "roadId": "a13",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 5,
+        "roadId": "a2",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 6,
+        "roadId": "a20",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 7,
+        "roadId": "a205",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 8,
+        "roadId": "a21",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 9,
+        "roadId": "a23",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 10,
+        "roadId": "a24",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 11,
+        "roadId": "a3",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 12,
+        "roadId": "a316",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 13,
+        "roadId": "a4",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 14,
+        "roadId": "a40",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 15,
+        "roadId": "a406",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 16,
+        "roadId": "a41",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 17,
+        "roadId": "bishopsgate cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 18,
+        "roadId": "blackwall tunnel",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 19,
+        "roadId": "city route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 20,
+        "roadId": "farringdon cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 21,
+        "roadId": "inner ring",
+        "statusDescription": "Serious Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Serious",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 22,
+        "roadId": "silvertown tunnel",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 23,
+        "roadId": "southern river route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 24,
+        "roadId": "western cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-11-29T21:38:53"
+    },
+    {
+        "id": 25,
+        "roadId": "a1",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 26,
+        "roadId": "a10",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 27,
+        "roadId": "a12",
+        "statusDescription": "Serious Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Serious",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 28,
+        "roadId": "a13",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 29,
+        "roadId": "a2",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 30,
+        "roadId": "a20",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 31,
+        "roadId": "a205",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 32,
+        "roadId": "a21",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 33,
+        "roadId": "a23",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 34,
+        "roadId": "a24",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 35,
+        "roadId": "a3",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 36,
+        "roadId": "a316",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 37,
+        "roadId": "a4",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 38,
+        "roadId": "a40",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 39,
+        "roadId": "a406",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 40,
+        "roadId": "a41",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 41,
+        "roadId": "bishopsgate cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 42,
+        "roadId": "blackwall tunnel",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 43,
+        "roadId": "city route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 44,
+        "roadId": "farringdon cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 45,
+        "roadId": "inner ring",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 46,
+        "roadId": "silvertown tunnel",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 47,
+        "roadId": "southern river route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    },
+    {
+        "id": 48,
+        "roadId": "western cross route",
+        "statusDescription": "No Exceptional Delays",
+        "statusEndDate": null,
+        "statusSeverity": "Good",
+        "statusStartDate": null,
+        "timestamp": "2025-12-04T06:04:33"
+    }
+]

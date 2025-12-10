@@ -9,7 +9,6 @@ import Data.Aeson
 import Types
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text.Encoding as T
-import qualified Data.Text as T
 import Data.Text (Text)
 import Data.List (minimumBy)
 import Data.Maybe (isJust)
@@ -48,15 +47,19 @@ calculateRoadCenter road =
         -- API returns bounds as [[lon, lat], [lon, lat]]
         case decode (LBS.fromStrict $ T.encodeUtf8 jsonStr) :: Maybe [[Double]] of
             Just points | not (null points) -> 
-                let lats = map (!! 1) points
-                    lons = map head points
-                    minLat = minimum lats
-                    maxLat = maximum lats
-                    minLon = minimum lons
-                    maxLon = maximum lons
-                in r { roadLat = Just ((minLat + maxLat) / 2)
-                     , roadLon = Just ((minLon + maxLon) / 2) 
-                     }
+                let validPoints = [ (l, t) | [l, t] <- points ] -- Expecting [lon, lat] implies 2 elements
+                    lats = map snd validPoints
+                    lons = map fst validPoints
+                in if null lats || null lons
+                   then r
+                   else 
+                       let minLat = minimum lats
+                           maxLat = maximum lats
+                           minLon = minimum lons
+                           maxLon = maximum lons
+                       in r { roadLat = Just ((minLat + maxLat) / 2)
+                            , roadLon = Just ((minLon + maxLon) / 2) 
+                            }
             _ -> r
 
 -- | Processes disruptions to calculate their coordinates and find the nearest road.
@@ -93,6 +96,6 @@ compareDistance dLat dLon r1 r2 =
     compare (dist r1) (dist r2)
   where
     dist r = case (roadLat r, roadLon r) of
-        (Just rLat, Just rLon) -> (rLat - dLat)^2 + (rLon - dLon)^2 -- Squared Euclidean distance is sufficient for comparison
+        (Just rLat, Just rLon) -> (rLat - dLat) ^ (2 :: Int) + (rLon - dLon) ^ (2 :: Int) -- Squared Euclidean distance is sufficient for comparison
         _ -> 1/0 -- Infinity
 

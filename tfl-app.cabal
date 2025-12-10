@@ -36,6 +36,11 @@ executable tfl-app
                      , Database
                      , Utils.Env
                      , Utils.Display
+                     , Actions.Search
+                     , Actions.Search.Common
+                     , Actions.Search.ByName
+                     , Actions.Search.BySeverity
+                     , Actions.Search.ByCoordinates
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
