@@ -105,7 +105,7 @@ instance FromJSON Disruption where
         <*> v .:? "status" .!= ""
         <*> v .:? "severity" .!= ""
         <*> v .:? "point"
-        <*> (fmap (T.pack . LBS.unpack . encode) <$> (v .:? "geometry" :: Parser (Maybe Value)))
+        <*> parseGeometryField v "geometry"
         <*> pure Nothing -- lat calculated later
         <*> pure Nothing -- lon calculated later
         <*> pure Nothing -- nearestRoadId calculated later
@@ -133,3 +133,12 @@ instance FromJSON CoordinateEntry where
         <*> v .: "lat"
         <*> v .: "long"
         <*> v .: "area"
+
+-- | Helper to parse a field as a JSON string (Text).
+-- Useful for storing arbitrary JSON blobs like geometry.
+parseGeometryField :: Object -> Key -> Parser (Maybe Text)
+parseGeometryField v key = do
+    maybeVal <- v .:? key :: Parser (Maybe Value)
+    case maybeVal of
+        Just val -> return $ Just $ T.pack $ LBS.unpack $ encode val
+        Nothing -> return Nothing

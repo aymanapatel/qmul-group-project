@@ -6,11 +6,13 @@ module Parse (
 ) where
 
 import Data.Aeson
-import qualified Data.ByteString.Lazy as LBS
 import Types
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text.Encoding as T
-import Data.Text (Text)
 import qualified Data.Text as T
+import Data.Text (Text)
+import Data.List (minimumBy)
+import Data.Maybe (isJust)
 
 -- | Parses JSON data into a list of 'Road' objects.
 --
@@ -93,12 +95,4 @@ compareDistance dLat dLon r1 r2 =
     dist r = case (roadLat r, roadLon r) of
         (Just rLat, Just rLon) -> (rLat - dLat)^2 + (rLon - dLon)^2 -- Squared Euclidean distance is sufficient for comparison
         _ -> 1/0 -- Infinity
-
-isJust :: Maybe a -> Bool
-isJust (Just _) = True
-isJust Nothing = False
-
-minimumBy :: (a -> a -> Ordering) -> [a] -> a
-minimumBy _ [] = error "Empty list"
-minimumBy cmp (x:xs) = foldl (\acc y -> if cmp y acc == LT then y else acc) x xs
 

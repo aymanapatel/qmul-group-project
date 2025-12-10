@@ -21,7 +21,7 @@ import Types
 import Data.Time (getCurrentTime, formatTime, defaultTimeLocale)
 import Data.Text (Text)
 import Data.Aeson (decode)
-import Data.List (minimumBy)
+import Data.List (minimumBy, sortBy, sortOn)
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Text.Encoding as T
@@ -322,10 +322,3 @@ haversine lat1 lon1 lat2 lon2 = d
 -- | Helper to sort by squared Euclidean distance (still useful for rough initial sorting if needed, but we use calculated Haversine now)
 sortOnDistance :: Double -> Double -> [(Text, Text, Double, Double)] -> [(Text, Text, Double, Double)]
 sortOnDistance lat lon = sortOn (\(_, _, rLat, rLon) -> (rLat - lat)^2 + (rLon - lon)^2)
-
-sortOn :: Ord b => (a -> b) -> [a] -> [a]
-sortOn f = sortBy (\x y -> compare (f x) (f y))
-
-sortBy :: (a -> a -> Ordering) -> [a] -> [a]
-sortBy _ [] = []
-sortBy cmp (x:xs) = sortBy cmp [y | y <- xs, cmp y x == LT] ++ [x] ++ sortBy cmp [y | y <- xs, cmp y x /= LT]
