@@ -34,6 +34,8 @@ executable tfl-app
                      , Fetch
                      , Parse
                      , Database
+                     , Utils.Env
+                     , Utils.Display
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
