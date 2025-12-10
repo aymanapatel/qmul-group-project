@@ -2,205 +2,144 @@
 
 ## Group Coursework — ECS713U/P Functional Programming 2025/26
 
-This project is a **stack-based Haskell app** for harvesting information from the Transport for London (TfL) API and saving it to a database. It allows users to query the data and analyze traffic trends.
+**TfL Road Flow Tracker** is a comprehensive Haskell application designed to monitor, analyze, and visualize road status data from Transport for London (TfL). It leverages the TfL Unified API to build a historical database of traffic disruptions, enabling users to check real-time status, find nearest clear routes, and analyze long-term reliability trends.
 
-## Application Overview
+---
 
-The **TfL Road Flow Tracker** is designed to harvest, store, and analyze road status data. It allows users to build a historical database of road disruptions and perform trend analysis to identify reliability issues.
+## 🚀 Key Features
 
-## Compilation and Usage
+- **Real-time Data Harvesting**: Fetches live road status, severity, and disruption polygons from the TfL API.
+- **Persistent Storage**: Stores data in a normalized SQLite database for historical analysis.
+- **Interactive Search CLI**: A robust menu-driven interface to explore data:
+  - **Search by Name**: Fuzzy search for roads (e.g., "A1", "North Circular").
+  - **Search by Severity**: meaningful filtering (e.g., find all roads with "Severe Delays").
+  - **Geospatial Search**: Find roads near specific coordinates or predefined landmarks.
+- **Intelligent Recommendations**:
+  - Calculates distances using the **Haversine formula**.
+  - Suggests the **"Best Option"** (closest road with "Good Service").
+  - Warns against the **"Worst Option"** (roads with severe disruptions).
+- **Trend Analytics**: Generates reliability reports identifying the "worst" days and hours for traffic.
+
+---
+
+## 🛠️ Installation & Setup
 
 ### Prerequisites
 
-- Haskell Stack
-- TfL API Key (stored in `.env`)
+- **Haskell Stack**: Ensure `stack` is installed.
+- **TfL API Key**:
+  1.  Register at [api-portal.tfl.gov.uk](https://api-portal.tfl.gov.uk/).
+  2.  Create a `.env` file in the project root:
+      ```env
+      TFL_APP_KEY=your_primary_key_here
+      ```
 
 ### Compilation
 
-To build the project, run:
+Build the project using Stack:
 
 ```bash
 stack build
 ```
 
-### Usage
-
-The application is run via `stack run` with specific commands:
-
-1.  **Initialize Database**:
-
-    ```bash
-    stack run -- create
-    ```
-
-    Creates `tfl.db` with `roads` and `road_status_logs` tables.
-
-2.  **Load Data**:
-
-    ```bash
-    stack run -- loaddata
-    ```
-
-    Fetches current road status from the TfL API and saves it to the database. Run this periodically to build history.
-
-3.  **Generate Report**:
-
-    ```bash
-    stack run -- report
-    ```
-
-    Displays a **Reliability Report** (percentage of "Good Service") and a **Traffic Trend Analysis** (worst days/hours for disruptions).
-
-4.  **Generate Report**:
-
-    ```bash
-    stack run -- report
-    ```
-
-    Displays a **Reliability Report** (percentage of "Good Service") and a **Traffic Trend Analysis** (worst days/hours for disruptions).
-
-5.  **Interactive Search**:
-
-    ```bash
-    stack run -- search
-    ```
-
-    Allows you to search for roads by name (partial match) and view their latest status.
-
-6.  **Dump Data**:
-    ```bash
-    stack run -- dumpdata
-    ```
-    Exports all database logs to `data.json`.
-
-## Web Source and Extraction
-
-- **Source**: [TfL Unified API - Road Endpoint](https://api.tfl.gov.uk/Road)
-- **Extraction**: The app uses `http-conduit` to send a GET request to the API. The JSON response is parsed using `aeson` into Haskell data types (`Road`).
-- **Authentication**: The API key is securely loaded from a `.env` file and appended to the request URL.
-
-## Design Choices
-
-- **Database Schema**: A normalized schema with `roads` (static data) and `road_status_logs` (time-series data) ensures efficient storage and allows for complex historical queries.
-- **Environment Variables**: Storing the API key in `.env` prevents hardcoding sensitive credentials.
-- **Modular Structure**: Code is separated into `Fetch`, `Parse`, `Database`, and `Types` modules for maintainability and separation of concerns.
-
-## Extra Feature: Traffic Trend Analyzer
-
-Beyond the basic requirements, we implemented a **Traffic Trend Analyzer**.
-
-- **Functionality**: This feature analyzes the historical data in `road_status_logs` to identify patterns in traffic disruptions.
-- **Implementation**: It uses SQL aggregation queries (`GROUP BY`, `COUNT`, `strftime`) to calculate:
-  - **Worst Day of the Week**: Which days have the most disruptions.
-  - **Worst Hour of the Day**: What times are most prone to traffic issues.
-- **Technical Complexity**: This required advanced SQL usage within Haskell and logic to map numerical day representations (0-6) to human-readable names (Sunday-Saturday).
-
 ---
 
-## Original Project Specification (Reference)
+## 📖 Usage Guide
 
-### Building project guidelines
+The application is executed via `stack run` followed by a command.
 
-1. Run build command
+### 1. Database Initialization
 
-```shell
-stack build
+First, set up the SQLite database schema (`tfl.db`).
+
+```bash
+stack run -- create
 ```
 
-2. Run
+### 2. Data Harvesting
 
-```shell
-stack exec tfl-app
+Fetch live data from TfL. Run this periodically to build a history.
+
+```bash
+stack run -- loaddata
 ```
 
-### Instructions
+### 3. Interactive Search (Main Feature)
 
-- Remove `.stack-work` before putting the zip
-- Do not touch `tfl-app.cabal`
+Launch the interactive CLI to explore the data.
 
-[Project specification](https://learnouts.com/student/72/cw/121/)
+```bash
+stack run -- search
+```
 
-**This is a group project:**
+#### **Search Flows**
 
-- Recommended: Use `git` for collaboration and version tracking
-- All students have accounts on QM GitHub: [https://github.qmul.ac.uk](https://github.qmul.ac.uk)
+- **Option 1: Search by Road Name**
 
----
+  - Enter a partial name (e.g., "A12").
+  - Select from the matching results.
+  - View detailed status, severity description, and active disruptions.
 
-## **Task Overview**
+- **Option 2: Search by Severity**
 
-Your group will implement a **stack-based Haskell app** for harvesting information from the Web and saving it to a database.
+  - Choose a severity level (e.g., "Severe Delays", "Closure").
+  - See a list of all affected roads sorted by name.
 
-- Use `stack` to create, build, and run your project.
-- Name your stack project: **haskell-project**
-- The app must enable users to query the database.
+- **Option 3: Search by Coordinate (Geospatial)**
+  - **Predefined Locations**: Select a person/location from `coordinates.json` (e.g., "Varsha @ Aldgate").
+  - **Manual Input**: Enter custom Latitude and Longitude.
+  - **Results**:
+    - Displays nearest roads with **distance in miles**.
+    - **Recommendation Engine**: Automatically highlights the closest road with "Good Service" vs. roads to avoid.
+    - Detailed breakdown of nearest disruptions.
 
-### **Main Tasks**
+### 4. Analytics Report
 
-1. Your group will be assigned one **specific web API (JSON)** containing data of interest.
-2. **Module structure:**
-   - `Types.hs`: Defines Haskell data types
-   - `Fetch.hs`: Function for downloading JSON docs from the web API
-   - `Parse.hs`: Parses downloaded data into your Haskell datatype
-3. **Database module:**
-   - `Database.hs`: Creates DB tables, saves/retrieves data using Haskell types
-4. **JSON generation:**
-   - Parsing module (`Parse.hs`) must generate a JSON representation and write to a file
-5. **Main function (`Main.hs`):**
-   | Command | Action |
-   |---------|--------|
-   | stack run -- create | Creates sqlite database and tables |
-   | stack run -- loaddata | Downloads data from API and saves to database |
-   | stack run -- dumpdata | Generates `data.json` with all DB data |
-   | stack run -- | Run queries on the DB (your choice) |
-6. **Code comments:** Use haddock notation for automatic documentation generation
-7. **Extra feature:** Implement an additional challenging feature to demonstrate technical ability (required for full marks)
-8. **Report:** Write a **1-2 page(s) report** explaining your app, how to run it, and justify any design choices. Describe and justify any extra features implemented.
+Generate statistical insights on road reliability.
 
----
+```bash
+stack run -- report
+```
 
-## **Web API Assignment**
+- **Reliability Score**: % of time a road has "Good Service".
+- **Worst Day Analysis**: Analysis of which day of the week has the most incidents.
+- **Worst Hour Analysis**: Hourly breakdown of disruption frequency.
 
-Your group should use one of these APIs based on your group number:
+### 5. Data Export
 
-| Web API              | URL                                 | Condition                 |
-| -------------------- | ----------------------------------- | ------------------------- |
-| Transport for London | [API Link](https://api.tfl.gov.uk/) | group_number `mod` 7 == 6 |
+Dump the entire database to a JSON file for external use.
+
+```bash
+stack run -- dumpdata
+```
 
 ---
 
-## **Required Haskell Modules**
+## 🏗️ Technical Architecture
 
-- Use dependencies managed via `stack`, e.g., [lts-24-18](https://www.stackage.org/lts-24.18)
-- **Database access:** [sqlite-simple](https://www.stackage.org/lts-24.18/package/sqlite-simple)
-- **HTTP requests:** [http-conduit](https://www.stackage.org/lts-24.18/package/http-conduit)
-- **JSON parsing:** [aeson](https://www.stackage.org/lts-24.18/package/aeson)
-- Must use `sqlite` (do not use MySQL or Postgres)
+### Modules
+
+- **`Fetch`**: Handles HTTP requests to TfL using `http-conduit`.
+- **`Parse`**: Complex JSON parsing using `aeson`. Handles nested geometry (polygons/bounds) for roads and disruptions.
+- **`Database`**: SQLite interactions using `sqlite-simple`. Implements safe, parameterized queries.
+- **`Actions`**: Contains business logic for the interactive search flows (`Search.hs` and submodules).
+- **`Utils`**: Helper functions for Environment variables and Terminal display formatting.
+
+### Database Schema
+
+- **`roads`**: Stores static data (ID, Name, Geometry).
+- **`road_status_logs`**: Time-series data storing status updates for trend analysis.
+- **`road_disruptions`**: Stores detailed disruption info including polygon geometry for geospatial calculations.
+
+### Extra Features Implemented
+
+1.  **Traffic Trend Analyzer**: Aggregates historical logs to find temporal patterns (Worst Day/Hour).
+2.  **Geospatial Recommendation Engine**: Uses the Haversine formula and bounding-box logic to map coordinates to roads, providing actionable travel advice ("Best Option").
 
 ---
 
-## **Report Requirements**
+## 🔗 Credits & References
 
-- Must be 1-2 pages in **PDF form** at the project top level
-- Explain how to compile/run/use your app
-- Detail your web source and extraction method
-- Describe any extra features and their technical complexity
-
----
-
-## **Marking Criteria**
-
-| Criteria                                                           | Max. Mark |
-| ------------------------------------------------------------------ | --------- |
-| Project compiles and runs successfully                             | 10        |
-| Basic functionality (download, parse, save on DB, queries) working | 15        |
-| Project code structured into modules                               | 5         |
-| Good knowledge of Haskell demonstrated                             | 10        |
-| Haddock-style documentation included                               | 10        |
-| Database: at least 2 tables, with relationship (foreign key)       | 15        |
-| HTTP fetch function and error handling complexity                  | 8         |
-| Data parsing complexity                                            | 7         |
-| Report quality and coverage                                        | 10        |
-| Complexity of extra work                                           | 10        |
-| Adjustments                                                        | 0         |
-| **Total:**                                                         | **100**   |
+- **Source**: [TfL Unified API](https://api.tfl.gov.uk/)
+- **Course**: ECS713U/P Functional Programming
+- **University**: Queen Mary University of London
