@@ -2,13 +2,17 @@
 module Types (
     Road(..),
     RoadStatusLog(..),
-    Disruption(..)
+    Disruption(..),
+    CoordinateEntry(..)
 ) where
 
 import Data.Aeson
+import Data.Aeson.Types (Parser, Value)
+import qualified Data.ByteString.Lazy.Char8 as LBS
+import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToRow
-import Database.SQLite.Simple (field)
+import Database.SQLite.Simple (field, Only(..))
 import Data.Text (Text)
 
 -- | Represents a Road from the TfL API.
@@ -21,6 +25,10 @@ data Road = Road
     , roadStatusStartDate :: Maybe Text -- ^ Start date of the status
     , roadStatusEndDate :: Maybe Text -- ^ End date of the status
     , roadUrl :: Maybe Text -- ^ The URL for more details
+    , roadBounds :: Maybe Text -- ^ The bounds of the road (JSON string)
+    , roadEnvelope :: Maybe Text -- ^ The envelope of the road (JSON string)
+    , roadLat :: Maybe Double -- ^ Calculated center latitude
+    , roadLon :: Maybe Double -- ^ Calculated center longitude
     } deriving (Show, Eq)
 
 instance FromJSON Road where
@@ -32,6 +40,10 @@ instance FromJSON Road where
         <*> v .:? "statusAggregationStartDate"
         <*> v .:? "statusAggregationEndDate"
         <*> v .:? "url"
+        <*> v .:? "bounds"
+        <*> v .:? "envelope"
+        <*> pure Nothing -- lat calculated later
+        <*> pure Nothing -- lon calculated later
 
 -- | Represents a historical log of a road's status.
 -- Stored in the database for trend analysis.
@@ -57,10 +69,11 @@ instance ToJSON RoadStatusLog where
         ]
 
 instance FromRow Road where
-  fromRow = Road <$> field <*> field <*> field <*> field <*> field <*> field <*> field
+  fromRow = Road <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
 
 instance ToRow Road where
-  toRow (Road rid name severity desc start end url) = toRow (rid, name, severity, desc, start, end, url)
+  toRow (Road rid name severity desc start end url bounds env lat lon) = 
+    toRow (rid, name, severity, desc, start, end, url, bounds, env) ++ toRow (lat, lon)
 
 instance FromRow RoadStatusLog where
   fromRow = RoadStatusLog <$> field <*> field <*> field <*> field <*> field <*> field <*> field
@@ -76,6 +89,11 @@ data Disruption = Disruption
     , disruptionDescription :: Text -- ^ Detailed description
     , disruptionStatus :: Text -- ^ Current status
     , disruptionSeverity :: Text -- ^ Severity level
+    , disruptionPoint :: Maybe Text -- ^ The point geometry (JSON string)
+    , disruptionGeometry :: Maybe Text -- ^ The full geometry (JSON string)
+    , disruptionLat :: Maybe Double -- ^ Latitude
+    , disruptionLon :: Maybe Double -- ^ Longitude
+    , disruptionNearestRoadId :: Maybe Text -- ^ ID of the nearest road
     } deriving (Show, Eq)
 
 instance FromJSON Disruption where
@@ -86,6 +104,32 @@ instance FromJSON Disruption where
         <*> v .:? "description" .!= ""
         <*> v .:? "status" .!= ""
         <*> v .:? "severity" .!= ""
+        <*> v .:? "point"
+        <*> (fmap (T.pack . LBS.unpack . encode) <$> (v .:? "geometry" :: Parser (Maybe Value)))
+        <*> pure Nothing -- lat calculated later
+        <*> pure Nothing -- lon calculated later
+        <*> pure Nothing -- nearestRoadId calculated later
 
 instance ToRow Disruption where
-    toRow (Disruption did url loc desc status sev) = toRow (did, url, loc, desc, status, sev)
+    toRow (Disruption did url loc desc status sev point geom lat lon nrid) = 
+        toRow (did, url, loc, desc, status, sev, point, geom, lat, lon) ++ toRow (Only nrid)
+
+instance FromRow Disruption where
+    fromRow = Disruption <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
+
+-- | Represents a pre-defined coordinate entry for search.
+data CoordinateEntry = CoordinateEntry
+    { coordCorridorName :: Text
+    , coordPersonName :: Text
+    , coordLat :: Double
+    , coordLong :: Double
+    , coordArea :: Text
+    } deriving (Show, Eq)
+
+instance FromJSON CoordinateEntry where
+    parseJSON = withObject "CoordinateEntry" $ \v -> CoordinateEntry
+        <$> v .: "corridorName"
+        <*> v .: "personName"
+        <*> v .: "lat"
+        <*> v .: "long"
+        <*> v .: "area"
