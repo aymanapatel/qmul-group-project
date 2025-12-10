@@ -10,14 +10,21 @@ module Database (
     dumpLogs,
     getReliabilityReport,
     getWorstDayAnalysis,
-    getWorstHourAnalysis
+    getWorstHourAnalysis,
+    getDisruptionsForRoad,
+    getNearestGoodRoads,
+    getNearestRoads
 ) where
 
 import Database.SQLite.Simple
 import Types
 import Data.Time (getCurrentTime, formatTime, defaultTimeLocale)
 import Data.Text (Text)
+import Data.Aeson (decode)
+import Data.List (minimumBy, sortBy, sortOn)
 import qualified Data.Text as T
+import qualified Data.ByteString.Lazy.Char8 as LBS
+import qualified Data.Text.Encoding as T
 
 -- | Creates the necessary database tables
 createTables :: IO ()
@@ -26,7 +33,11 @@ createTables = do
     execute_ conn "CREATE TABLE IF NOT EXISTS roads (\
                   \id TEXT PRIMARY KEY,\
                   \displayName TEXT NOT NULL,\
-                  \url TEXT\
+                  \url TEXT,\
+                  \bounds TEXT,\
+                  \envelope TEXT,\
+                  \lat REAL,\
+                  \lon REAL\
                   \)"
     execute_ conn "CREATE TABLE IF NOT EXISTS road_status_logs (\
                   \id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -45,6 +56,11 @@ createTables = do
                   \description TEXT,\
                   \status TEXT,\
                   \severity TEXT,\
+                  \point TEXT,\
+                  \geometry TEXT,\
+                  \lat REAL,\
+                  \lon REAL,\
+                  \nearest_road_id TEXT,\
                   \timestamp TEXT NOT NULL\
                   \)"
     close conn
@@ -57,8 +73,8 @@ saveRoads roads = do
     let timestamp = T.pack $ formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S" time
     
     -- Insert or ignore roads (static info)
-    executeMany conn "INSERT OR REPLACE INTO roads (id, displayName, url) VALUES (?, ?, ?)" 
-        (map (\r -> (roadId r, roadDisplayName r, roadUrl r)) roads)
+    executeMany conn "INSERT OR REPLACE INTO roads (id, displayName, url, bounds, envelope, lat, lon) VALUES (?, ?, ?, ?, ?, ?, ?)" 
+        (map (\r -> (roadId r, roadDisplayName r, roadUrl r, roadBounds r, roadEnvelope r, roadLat r, roadLon r)) roads)
         
     -- Insert status logs
     executeMany conn "INSERT INTO road_status_logs (road_id, severity, description, start_date, end_date, timestamp) VALUES (?, ?, ?, ?, ?, ?)"
@@ -73,10 +89,15 @@ saveDisruptions disruptions = do
     time <- getCurrentTime
     let timestamp = T.pack $ formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S" time
     
-    executeMany conn "INSERT OR REPLACE INTO road_disruptions (id, url, location, description, status, severity, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        (map (\d -> (disruptionId d, disruptionUrl d, disruptionLocation d, disruptionDescription d, disruptionStatus d, disruptionSeverity d, timestamp)) disruptions)
+    let rows = map (\d -> DisruptionRow d timestamp) disruptions
+    executeMany conn "INSERT OR REPLACE INTO road_disruptions (id, url, location, description, status, severity, point, geometry, lat, lon, nearest_road_id, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" rows
         
     close conn
+
+data DisruptionRow = DisruptionRow Disruption Text
+
+instance ToRow DisruptionRow where
+    toRow (DisruptionRow d timestamp) = toRow d ++ toRow (Only timestamp)
 
 -- | Searches for roads by name (partial match).
 -- Returns a list of (Road ID, Display Name).
@@ -187,13 +208,123 @@ getWorstHourAnalysis = do
 
 -- | Retrieves the latest status for a specific road.
 getLatestStatus :: Text -> IO [(Text, Text, Text, Maybe Text, Maybe Text, Maybe Text, Text)]
-getLatestStatus roadId = do
+getLatestStatus rId = do
     conn <- open "tfl.db"
     let sql = "SELECT r.displayName, l.severity, l.description, r.url, l.start_date, l.end_date, l.timestamp \
               \FROM road_status_logs l \
               \JOIN roads r ON l.road_id = r.id \
               \WHERE l.road_id = ? \
               \ORDER BY l.timestamp DESC LIMIT 1"
-    results <- query conn (Query (T.pack sql)) (Only roadId) :: IO [(Text, Text, Text, Maybe Text, Maybe Text, Maybe Text, Text)]
+    results <- query conn (Query (T.pack sql)) (Only rId) :: IO [(Text, Text, Text, Maybe Text, Maybe Text, Maybe Text, Text)]
     close conn
     return results
+
+-- | Retrieves disruptions near a specific road.
+getDisruptionsForRoad :: Text -> IO [Disruption]
+getDisruptionsForRoad rId = do
+    conn <- open "tfl.db"
+    let sql = "SELECT id, url, location, description, status, severity, point, geometry, lat, lon, nearest_road_id \
+              \FROM road_disruptions \
+              \WHERE nearest_road_id = ?"
+    results <- query conn (Query (T.pack sql)) (Only rId) :: IO [Disruption]
+    close conn
+    return results
+
+-- | Finds the nearest roads with "Good" status.
+-- Uses a simple Euclidean distance approximation on lat/lon.
+getNearestGoodRoads :: Double -> Double -> Int -> IO [(Text, Text, Double)]
+getNearestGoodRoads lat lon limit = do
+    conn <- open "tfl.db"
+    -- SQLite doesn't have SQRT or POW by default, so we fetch all good roads and sort in Haskell
+    -- Or we can approximate with (lat-lat)^2 + (lon-lon)^2 order if we fetch enough candidates.
+    -- Fetching all "Good" roads is safer for small datasets like this.
+    let sql = "SELECT r.id, r.displayName, r.lat, r.lon \
+              \FROM roads r \
+              \JOIN road_status_logs l ON r.id = l.road_id \
+              \WHERE l.severity = 'Good' \
+              \AND l.timestamp = (SELECT MAX(timestamp) FROM road_status_logs WHERE road_id = r.id) \
+              \AND r.lat IS NOT NULL AND r.lon IS NOT NULL"
+    rows <- query_ conn (Query (T.pack sql)) :: IO [(Text, Text, Double, Double)]
+    close conn
+    
+    let sorted = take limit $ sortOnDistance lat lon rows
+    return $ map (\(rid, name, _, _) -> (rid, name, 0.0)) sorted -- Distance not strictly needed for display, just order
+
+-- | Finds the nearest roads (regardless of status) using Bounding Box logic.
+-- Returns (Road ID, Display Name, Distance, Severity, Status Description)
+getNearestRoads :: Double -> Double -> Int -> IO [(Text, Text, Double, Text, Text)]
+getNearestRoads lat lon limit = do
+    conn <- open "tfl.db"
+    -- Join with logs to get latest severity and description.
+    let sql = "SELECT r.id, r.displayName, r.bounds, r.envelope, r.lat, r.lon, \
+              \COALESCE(l.severity, 'Unknown'), COALESCE(l.description, 'Unknown') \
+              \FROM roads r \
+              \LEFT JOIN road_status_logs l ON r.id = l.road_id AND l.timestamp = (SELECT MAX(timestamp) FROM road_status_logs WHERE road_id = r.id) \
+              \WHERE r.lat IS NOT NULL AND r.lon IS NOT NULL"
+    rows <- query_ conn (Query (T.pack sql)) :: IO [(Text, Text, Maybe Text, Maybe Text, Double, Double, Text, Text)]
+    close conn
+    
+    let withDist = map (\(rid, name, bounds, envelope, rLat, rLon, sev, desc) -> 
+            let dist = calculateDistance lat lon bounds envelope rLat rLon
+            in (rid, name, dist, sev, desc)) rows
+            
+    let sorted = take limit $ sortBy (\(_,_,d1,_,_) (_,_,d2,_,_) -> compare d1 d2) withDist
+    return sorted
+
+calculateDistance :: Double -> Double -> Maybe Text -> Maybe Text -> Double -> Double -> Double
+calculateDistance lat lon bounds envelope rLat rLon =
+    let box = case bounds of
+            Just b -> parseBounds b
+            Nothing -> case envelope of
+                Just e -> parseBounds e
+                Nothing -> []
+        
+        targetPoint = if null box
+                      then (rLat, rLon)
+                      else closestPointInPolygon lat lon box
+    in haversine lat lon (fst targetPoint) (snd targetPoint)
+  where
+    parseBounds :: Text -> [[Double]]
+    parseBounds jsonStr = case decode (LBS.fromStrict $ T.encodeUtf8 jsonStr) :: Maybe [[Double]] of
+        Just points -> points
+        Nothing -> []
+
+-- | Finds the closest point in a polygon (vertices) to a given point.
+-- If the point is inside the bounding box, returns the point itself.
+closestPointInPolygon :: Double -> Double -> [[Double]] -> (Double, Double)
+closestPointInPolygon lat lon points = 
+    let validPoints = [ (l, t) | [l, t] <- points ] -- Expecting [lon, lat] format implies 2 elements
+        lats = map snd validPoints
+        lons = map fst validPoints
+        
+        minLat = if null lats then lat else minimum lats
+        maxLat = if null lats then lat else maximum lats
+        minLon = if null lons then lon else minimum lons
+        maxLon = if null lons then lon else maximum lons
+    in if lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon
+        then (lat, lon) -- Inside the bounding box
+        else 
+            -- Find the vertex with minimum squared Euclidean distance
+            let squaredDist (ln, lt) = (lt - lat) ^ (2 :: Int) + (ln - lon) ^ (2 :: Int)
+                closest = if null validPoints 
+                          then (0, 0) 
+                          else minimumBy (\p1 p2 -> compare (squaredDist p1) (squaredDist p2)) validPoints
+            in (snd closest, fst closest)
+
+-- | Calculates the Haversine distance between two points in miles.
+haversine :: Double -> Double -> Double -> Double -> Double
+haversine lat1 lon1 lat2 lon2 = d
+  where
+    r = 3958.8 -- Earth radius in miles
+    toRadians deg = deg * pi / 180
+    dLat = toRadians (lat2 - lat1)
+    dLon = toRadians (lon2 - lon1)
+    lat1' = toRadians lat1
+    lat2' = toRadians lat2
+    a = sin (dLat / 2) ^ (2 :: Int) + cos lat1' * cos lat2' * sin (dLon / 2) ^ (2 :: Int)
+    c = 2 * atan2 (sqrt a) (sqrt (1 - a))
+    d = r * c
+
+-- | Helper to sort by squared Euclidean distance (still useful for rough initial sorting if needed, but we use calculated Haversine now)
+sortOnDistance :: Double -> Double -> [(Text, Text, Double, Double)] -> [(Text, Text, Double, Double)]
+sortOnDistance lat lon = sortOn (\(_, _, rLat, rLon) -> (rLat - lat) ^ (2 :: Int) + (rLon - lon) ^ (2 :: Int))

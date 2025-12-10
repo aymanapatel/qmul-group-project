@@ -1,0 +1,72 @@
+[
+  {
+    "corridorName": "Piccadilly Circus",
+    "personName": "Harsh",
+    "lat": 51.510091,
+    "long": -0.134594,
+    "area": "West End"
+  },
+  {
+    "corridorName": "Aldgate",
+    "personName": "Varsha",
+    "lat": 51.5133,
+    "long": -0.0771,
+    "area": "East London"
+  },
+  {
+    "corridorName": "Stratford",
+    "personName": "Ayman",
+    "lat": 51.5416,
+    "long": -0.0034,
+    "area": "East London"
+  },
+  {
+    "corridorName": "Kings Cross",
+    "personName": "Paulo",
+    "lat": 51.5320,
+    "long": -0.1233,
+    "area": "North London"
+  },
+  {
+    "corridorName": "Canary Wharf",
+    "personName": "Harsh",
+    "lat": 51.5054,
+    "long": -0.0235,
+    "area": "East London"
+  },
+  {
+    "corridorName": "London Bridge",
+    "personName": "Edmond",
+    "lat": 51.5081,
+    "long": -0.0878,
+    "area": "Central London"
+  },
+  {
+    "corridorName": "Wembley",
+    "personName": "Mannat",
+    "lat": 51.5505,
+    "long": -0.3048,
+    "area": "North West London"
+  },
+  {
+    "corridorName": "White City",
+    "personName": "Kavita",
+    "lat": 51.5110,
+    "long": -0.2380,
+    "area": "West London"
+  },
+  {
+    "corridorName": "Greenwich",
+    "personName": "Shreya",
+    "lat": 51.4779,
+    "long": -0.0015,
+    "area": "South East London"
+  },
+  {
+    "corridorName": "Camden Town",
+    "personName": "Nishant",
+    "lat": 51.5408,
+    "long": -0.1442,
+    "area": "North London"
+  }
+]

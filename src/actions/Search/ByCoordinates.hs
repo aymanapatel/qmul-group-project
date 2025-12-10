@@ -1,0 +1,91 @@
+{-# LANGUAGE OverloadedStrings #-}
+module Actions.Search.ByCoordinates (
+    searchByCoordinates
+) where
+
+import qualified Data.Text as T
+import qualified Data.ByteString.Lazy.Char8 as LBS
+import Data.Aeson (eitherDecode)
+import Text.Printf (printf)
+import Text.Read (readMaybe)
+import System.Directory (doesFileExist)
+import qualified Database as DB
+import Types (CoordinateEntry(..))
+import Actions.Search.Common (displayResultsWithDetails)
+
+searchByCoordinates :: IO () -> IO ()
+searchByCoordinates mainMenu = do
+    putStrLn "\n--- Search by Coordinates Menu ---"
+    putStrLn "1. Select from Predefined List"
+    putStrLn "2. Enter Coordinates Manually"
+    putStrLn "#. Back to Main Menu"
+    putStrLn "q. Quit"
+    putStrLn "Enter option:"
+    option <- getLine
+    case option of
+        "1" -> searchByPredefinedList mainMenu
+        "2" -> searchByManualCoordinates mainMenu
+        "#" -> mainMenu
+        "q" -> return ()
+        _ -> do
+            putStrLn "Invalid option."
+            searchByCoordinates mainMenu
+
+searchByPredefinedList :: IO () -> IO ()
+searchByPredefinedList mainMenu = do
+    exists <- doesFileExist "coordinates.json"
+    if not exists
+        then do
+            putStrLn "Error: coordinates.json not found."
+            searchByCoordinates mainMenu
+        else do
+            content <- LBS.readFile "coordinates.json"
+            case (eitherDecode content :: Either String [CoordinateEntry]) of
+                Left err -> do
+                    putStrLn $ "Error parsing coordinates.json: " ++ err
+                    searchByCoordinates mainMenu
+                Right entries -> do
+                    putStrLn "\nSelect a location:"
+                    mapM_ (\(i, entry) -> printf "%d. %s (%s) - %s\n" (i :: Int) (T.unpack $ coordCorridorName entry) (T.unpack $ coordArea entry) (T.unpack $ coordPersonName entry)) (zip [1..] entries)
+                    putStrLn "#. Back"
+                    putStrLn "q. Quit"
+                    putStrLn "Enter number:"
+                    input <- getLine
+                    case input of
+                        "#" -> searchByCoordinates mainMenu
+                        "q" -> return ()
+                        _ -> case readMaybe input :: Maybe Int of
+                            Just idx | idx > 0 && idx <= length entries -> do
+                                let entry = entries !! (idx - 1)
+                                putStrLn $ "\nSelected: " ++ T.unpack (coordCorridorName entry)
+                                performCoordinateSearch (coordLat entry) (coordLong entry) mainMenu
+                            _ -> do
+                                putStrLn "Invalid selection."
+                                searchByPredefinedList mainMenu
+
+searchByManualCoordinates :: IO () -> IO ()
+searchByManualCoordinates mainMenu = do
+    putStrLn "\nEnter Longitude (e.g., -0.1278) or '#' to go back:"
+    lonStr <- getLine
+    case lonStr of
+        "#" -> searchByCoordinates mainMenu
+        _ -> case readMaybe lonStr :: Maybe Double of
+            Nothing -> do
+                putStrLn "Invalid longitude."
+                searchByManualCoordinates mainMenu
+            Just lon -> do
+                putStrLn "Enter Latitude (e.g., 51.5074):"
+                latStr <- getLine
+                case readMaybe latStr :: Maybe Double of
+                    Nothing -> do
+                        putStrLn "Invalid latitude."
+                        searchByManualCoordinates mainMenu
+                    Just lat -> performCoordinateSearch lat lon mainMenu
+
+performCoordinateSearch :: Double -> Double -> IO () -> IO ()
+performCoordinateSearch lat lon mainMenu = do
+    putStrLn $ "\nSearching for roads near " ++ show lat ++ ", " ++ show lon ++ "..."
+    results <- DB.getNearestRoads lat lon 5
+    if null results
+        then putStrLn "No roads found nearby."
+        else displayResultsWithDetails results (searchByCoordinates mainMenu) mainMenu (searchByCoordinates mainMenu)
