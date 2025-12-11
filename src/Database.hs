@@ -7,7 +7,8 @@ module Database (
     getLatestStatus,
     getAllRoads,
     getRoadsBySeverity,
-    dumpLogs,
+    getAllLogs,
+    dumpAllData,
     getReliabilityReport,
     getWorstDayAnalysis,
     getWorstHourAnalysis,
@@ -133,9 +134,26 @@ getRoadsBySeverity severity = do
     close conn
     return results
 
+-- | Retrieves all data from the database.
+dumpAllData :: IO DatabaseDump
+dumpAllData = do
+    conn <- open "tfl.db"
+    
+    -- Fetch all roads
+    roads <- query_ conn "SELECT r.id, r.displayName, '', '', '', '', r.url, r.bounds, r.envelope, r.lat, r.lon FROM roads r" :: IO [Road]
+    
+    -- Fetch all logs
+    logs <- query_ conn "SELECT id, road_id, severity, description, start_date, end_date, timestamp FROM road_status_logs" :: IO [RoadStatusLog]
+    
+    -- Fetch all disruptions
+    disruptions <- query_ conn "SELECT id, url, location, description, status, severity, point, geometry, lat, lon, nearest_road_id FROM road_disruptions" :: IO [Disruption]
+    
+    close conn
+    return $ DatabaseDump roads logs disruptions
+
 -- | Retrieves all status logs from the database
-dumpLogs :: IO [RoadStatusLog]
-dumpLogs = do
+getAllLogs :: IO [RoadStatusLog]
+getAllLogs = do
     conn <- open "tfl.db"
     let sql = "SELECT id, road_id, severity, description, start_date, end_date, timestamp FROM road_status_logs"
     logs <- query_ conn (Query (T.pack sql)) :: IO [RoadStatusLog]
