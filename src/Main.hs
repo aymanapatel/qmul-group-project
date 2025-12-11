@@ -57,9 +57,9 @@ main = do
                                     putStrLn "Done."
             
         ["dumpdata"] -> do
-            putStrLn "Dumping data to data.json..."
-            logs <- dumpLogs
-            LBS.writeFile "data.json" (encode logs)
+            putStrLn "Dumping COMPLETE database to data.json..."
+            fullDump <- dumpAllData
+            LBS.writeFile "data.json" (encode fullDump)
             putStrLn "Done."
             
         ["search"] -> searchLoop

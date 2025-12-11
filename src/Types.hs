@@ -4,7 +4,8 @@ module Types (
     RoadStatusLog(..),
     Disruption(..),
     CoordinateEntry(..),
-    RoadDetailedDisplayData(..)
+    RoadDetailedDisplayData(..),
+    DatabaseDump(..)
 ) where
 
 import Data.Aeson hiding (Value)
@@ -156,3 +157,47 @@ data RoadDetailedDisplayData = RoadDetailedDisplayData
     , rddDisruptions :: [Disruption]
     , rddAlternativeRoutes :: [(Text, Text, Double)] -- ^ List of (ID, Name, Distance)
     } deriving (Show, Eq)
+
+-- | Container for exporting all database data.
+data DatabaseDump = DatabaseDump
+    { dumpRoads :: [Road]
+    , dumpLogs :: [RoadStatusLog]
+    , dumpDisruptions :: [Disruption]
+    } deriving (Show, Eq)
+
+instance ToJSON DatabaseDump where
+    toJSON (DatabaseDump roads logs disruptions) = object
+        [ "roads" .= roads
+        , "logs" .= logs
+        , "disruptions" .= disruptions
+        ]
+
+instance ToJSON Road where
+    toJSON (Road rid name severity desc start end url bounds env lat lon) = object
+        [ "id" .= rid
+        , "displayName" .= name
+        , "statusSeverity" .= severity
+        , "statusSeverityDescription" .= desc
+        , "statusAggregationStartDate" .= start
+        , "statusAggregationEndDate" .= end
+        , "url" .= url
+        , "bounds" .= bounds
+        , "envelope" .= env
+        , "lat" .= lat
+        , "lon" .= lon
+        ]
+
+instance ToJSON Disruption where
+    toJSON (Disruption did url loc desc status sev point geom lat lon nrid) = object
+        [ "id" .= did
+        , "url" .= url
+        , "location" .= loc
+        , "description" .= desc
+        , "status" .= status
+        , "severity" .= sev
+        , "point" .= point
+        , "geometry" .= geom
+        , "lat" .= lat
+        , "lon" .= lon
+        , "nearestRoadId" .= nrid
+        ]
