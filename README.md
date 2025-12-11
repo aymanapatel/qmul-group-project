@@ -2,6 +2,8 @@
 
 ## Group Coursework — ECS713U/P Functional Programming 2025/26
 
+> **📄 <a href="REPORT.md" target="_blank">View the Full Project Report</a>**
+
 **TfL Road Flow Tracker** is a comprehensive Haskell application designed to monitor, analyze, and visualize road status data from Transport for London (TfL). It leverages the TfL Unified API to build a historical database of traffic disruptions, enabling users to check real-time status, find nearest clear routes, and analyze long-term reliability trends.
 
 ---
@@ -28,7 +30,7 @@
 
 - **Haskell Stack**: Ensure `stack` is installed.
 - **TfL API Key**:
-  1.  Register at [api-portal.tfl.gov.uk](https://api-portal.tfl.gov.uk/).
+  1.  Register at <a href="https://api-portal.tfl.gov.uk/" target="_blank">api-portal.tfl.gov.uk</a>.
   2.  Create a `.env` file in the project root:
       ```env
       TFL_APP_KEY=your_primary_key_here
@@ -140,6 +142,6 @@ stack run -- dumpdata
 
 ## 🔗 Credits & References
 
-- **Source**: [TfL Unified API](https://api.tfl.gov.uk/)
+- **Source**: <a href="https://api.tfl.gov.uk/" target="_blank">TfL Unified API</a>
 - **Course**: ECS713U/P Functional Programming
 - **University**: Queen Mary University of London
