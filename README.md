@@ -88,12 +88,11 @@ stack run -- search
   - See a list of all affected roads sorted by name.
 
 - **Option 3: Search by Coordinate (Geospatial)**
-  - **Predefined Locations**: Select a person/location from `coordinates.json` (e.g., "Varsha @ Aldgate").
+  - **Predefined Locations**: Select a person/location from `coordinates.json`
   - **Manual Input**: Enter custom Latitude and Longitude.
   - **Results**:
     - Displays nearest roads with **distance in miles**.
     - **Recommendation Engine**: Automatically highlights the closest road with "Good Service" vs. roads to avoid.
-    - Detailed breakdown of nearest disruptions.
 
 ### 4. Analytics Report
 
@@ -104,8 +103,6 @@ stack run -- report
 ```
 
 - **Reliability Score**: % of time a road has "Good Service".
-- **Worst Day Analysis**: Analysis of which day of the week has the most incidents.
-- **Worst Hour Analysis**: Hourly breakdown of disruption frequency.
 
 ### 5. Data Export
 
@@ -139,6 +136,56 @@ stack run -- dumpdata
 2.  **Geospatial Recommendation Engine**: Uses the Haversine formula and bounding-box logic to map coordinates to roads, providing actionable travel advice ("Best Option").
 
 ---
+
+## Database schema
+
+The project dumps the data in a SQLite db file named: `tfl.db`
+
+The file consists of 3 tables: `roads`, `road_status_logs` and `road_disruptions`
+
+### Table: `roads`
+
+| **Column Name** | **Type** | **Description** |
+| --- | --- | --- |
+| id | TEXT | Primary key to represent the code |
+| displayName | TEXT | Human readable form of road |
+| url | TEXT | API resource path. Required when calling the TfL API |
+| bounds | TEXT | Find the bound of the road. It contains an array of latitude and longitude. It has 2 pairs that define the rectangular area. |
+| envelope | TEXT | Provides the coordinates in terms of polygon. |
+| lat | REAL | Represents the Latitude |
+| lon | REAL | Represents the longitude. |
+
+### Table: `road_status_logs`
+
+| **Column Name** | **Type** | **Description** |
+| --- | --- | --- |
+| id | TEXT | Primary key |
+| road_id | TEXT | Foreign key to roads table’s id |
+| severity | TEXT | Severity level of the road status:
+Good, Serious, Severe |
+| description | TEXT | Description of the road status |
+| start_date | TEXT | Start date of the status |
+| end_date | TEXT | End date of the status |
+| timestamp | TEXT | Timestamp when the log was created |
+
+### Table: **`road_disruptions`**
+
+| **Column Name** | **Type** | Description |
+| --- | --- | --- |
+| id | TEXT | Primary Key |
+| url | TEXT | URL of disruption id:
+It is of the format `/Road/All/Disruption/<id>` |
+| location | TEXT | Location of the disruption |
+| description | TEXT | Description of the disruption |
+| status | TEXT | Status of the disruption |
+| severity | TEXT | Severity of the disruption:
+Moderate, Minimal and No Impact |
+| point | TEXT | Single point which highlights the central location of the disruption |
+| geometry | TEXT | Represents the geographic data affected by the disruption |
+| lat | REAL | Represents the Latitude |
+| lon | REAL | Represents the Longitude |
+| nearest_road_id | TEXT | A calculated value that stores the nearest road to the given disruption. |
+| timestamp | TEXT | Timestamp |
 
 ## 🔗 Credits & References
 
