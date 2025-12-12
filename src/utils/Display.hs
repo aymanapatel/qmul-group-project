@@ -1,10 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Utils.Display (
     bold,
-    colorizeSeverity
+    colorizeSeverity,
+    box
 ) where
 
 import qualified Data.Text as T
+
+-- | Wraps a list of strings in a decorative box.
+box :: [String] -> [String]
+box content =
+    let maxLen = maximum (map length content)
+        width = maxLen + 4 -- 2 spaces padding on each side
+        top = "╭" ++ replicate width '─' ++ "╮"
+        bottom = "╰" ++ replicate width '─' ++ "╯"
+        formatLine s = "│  " ++ s ++ replicate (maxLen - length s) ' ' ++ "  │"
+        middle = map formatLine content
+    in [top] ++ middle ++ [bottom]
 
 -- | Helper to bold text using ANSI codes
 bold :: String -> String

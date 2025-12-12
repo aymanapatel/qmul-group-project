@@ -11,24 +11,32 @@ import Text.Read (readMaybe)
 import System.Directory (doesFileExist)
 import qualified Database as DB
 import Types (CoordinateEntry(..))
-import Actions.Search.Common (displayResultsWithDetails)
+import Actions.Search.Common (displayResultsWithDetails, exitApp, printSeparator)
+import Utils.Display (box)
 
 searchByCoordinates :: IO () -> IO ()
 searchByCoordinates mainMenu = do
-    putStrLn "\n--- Search by Coordinates Menu ---"
-    putStrLn "1. Select from Predefined List"
-    putStrLn "2. Enter Coordinates Manually"
-    putStrLn "\nm. Main Menu"
-    putStrLn "q. Quit"
+    let menuOptions = [ ""
+                      , "Search by Location"
+                      , ""
+                      , "1. Select a location from the predefined list"
+                      , "2. Enter custom coordinates"
+                      , ""
+                      , "\"home\" to return to the home page"
+                      , "\"exit\" to exit the application"
+                      , ""
+                      ]
+    mapM_ putStrLn (box menuOptions)
+    printSeparator
     putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
         "1" -> searchByPredefinedList mainMenu
         "2" -> searchByManualCoordinates mainMenu
-        "m" -> mainMenu
-        "q" -> return ()
+        "home" -> mainMenu
+        "exit" -> exitApp
         _ -> do
-            putStrLn "Invalid option."
+            putStrLn "\nPlease select an option from the given list."
             searchByCoordinates mainMenu
 
 searchByPredefinedList :: IO () -> IO ()
@@ -36,7 +44,7 @@ searchByPredefinedList mainMenu = do
     exists <- doesFileExist "coordinates.json"
     if not exists
         then do
-            putStrLn "Error: coordinates.json not found."
+            putStrLn "Configuration Error: 'coordinates.json' file is missing."
             searchByCoordinates mainMenu
         else do
             content <- LBS.readFile "coordinates.json"
@@ -47,31 +55,33 @@ searchByPredefinedList mainMenu = do
                 Right entries -> do
                     putStrLn "\nSelect a location:"
                     mapM_ (\(i, entry) -> printf "%d. %s (%s) - %s\n" (i :: Int) (T.unpack $ coordCorridorName entry) (T.unpack $ coordArea entry) (T.unpack $ coordPersonName entry)) (zip [1..] entries)
-                    putStrLn "\nb. Back"
-                    putStrLn "q. Quit"
+                    putStrLn "\nhome. Home Page\nb. Back\nexit. Exit Application\n"
+                    printSeparator
                     putStrLn "\n\nEnter option:"
                     input <- getLine
                     case input of
+                        "home" -> mainMenu
                         "b" -> searchByCoordinates mainMenu
-                        "q" -> return ()
+                        "exit" -> exitApp
                         _ -> case readMaybe input :: Maybe Int of
                             Just idx | idx > 0 && idx <= length entries -> do
                                 let entry = entries !! (idx - 1)
                                 putStrLn $ "\nSelected: " ++ T.unpack (coordCorridorName entry)
                                 performCoordinateSearch (coordLat entry) (coordLong entry) mainMenu
                             _ -> do
-                                putStrLn "Invalid selection."
+                                putStrLn "\nPlease select an option from the given list."
                                 searchByPredefinedList mainMenu
 
 searchByManualCoordinates :: IO () -> IO ()
 searchByManualCoordinates mainMenu = do
-    putStrLn "\nEnter Longitude (e.g., -0.1278) or 'b' to go back:"
+    printSeparator
+    putStrLn "\nPlease enter Longitude (e.g., -0.1278) or press 'b' to return:"
     lonStr <- getLine
     case lonStr of
         "b" -> searchByCoordinates mainMenu
         _ -> case readMaybe lonStr :: Maybe Double of
             Nothing -> do
-                putStrLn "Invalid longitude."
+                putStrLn "The longitude entered is invalid. Please try again."
                 searchByManualCoordinates mainMenu
             Just lon -> do
                 putStrLn "Enter Latitude (e.g., 51.5074):"
@@ -84,8 +94,8 @@ searchByManualCoordinates mainMenu = do
 
 performCoordinateSearch :: Double -> Double -> IO () -> IO ()
 performCoordinateSearch lat lon mainMenu = do
-    putStrLn $ "\nSearching for roads near " ++ show lat ++ ", " ++ show lon ++ "..."
+    putStrLn $ "\nLocating roads near " ++ show lat ++ ", " ++ show lon ++ "..."
     results <- DB.getNearestRoads lat lon 5
     if null results
-        then putStrLn "No roads found nearby."
+        then putStrLn "No roads were found within the search radius."
         else displayResultsWithDetails results (searchByCoordinates mainMenu) mainMenu (searchByCoordinates mainMenu)

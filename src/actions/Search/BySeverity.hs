@@ -6,16 +6,23 @@ module Actions.Search.BySeverity (
 import qualified Data.Text as T
 import Text.Printf (printf)
 import qualified Database as DB
-import Actions.Search.Common () -- no specific imports needed here, but kept for consistency if needed later
+import Actions.Search.Common (exitApp, printSeparator)
+import Utils.Display (box)
 
 searchBySeverity :: IO () -> IO ()
 searchBySeverity mainMenu = do
-    putStrLn "\n--- Severity Search Menu ---"
-    putStrLn "1. Good"
-    putStrLn "2. Serious"
-    putStrLn "3. Severe"
-    putStrLn "\nb. Back"
-    putStrLn "q. Quit"
+    let menuOptions = [ ""
+                      , "Search by Severity"
+                      , ""
+                      , "1. Good"
+                      , "2. Serious"
+                      , "3. Severe"
+                      , ""
+                      , "\"home\" to return to the home page"
+                      , "b. Back"
+                      , "\"exit\" to exit the application"
+                      ]
+    mapM_ putStrLn (box menuOptions)
     putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
@@ -23,9 +30,9 @@ searchBySeverity mainMenu = do
         "2" -> performSeveritySearch "Serious" mainMenu
         "3" -> performSeveritySearch "Severe" mainMenu
         "b" -> mainMenu
-        "q" -> return ()
+        "exit" -> exitApp
         _ -> do
-            putStrLn "Invalid option."
+            putStrLn "\nPlease select an option from the given list."
             searchBySeverity mainMenu
 
 performSeveritySearch :: String -> IO () -> IO ()
@@ -33,23 +40,21 @@ performSeveritySearch severity mainMenu = do
     results <- DB.getRoadsBySeverity (T.pack severity)
     if null results
         then do
-            putStrLn $ "No roads found with severity: " ++ severity
+            putStrLn $ "\nNo roads currently match the severity status: " ++ severity ++ "\n"
             searchBySeverity mainMenu
         else do
-            putStrLn $ "\nRoads with severity: " ++ severity
+            putStrLn $ "\nRoads reporting status: " ++ severity ++ "\n"
             printf ("%-5s %-30s %-25s %-30s\n" :: String) ("No." :: String) ("Road Name" :: String) ("Timing" :: String) ("Description" :: String)
             putStrLn $ replicate 90 '-'
             mapM_ (\(i, (_, name, desc, time)) -> printf ("%-5d %-30s %-25s %-30s\n" :: String) (i :: Int) (T.unpack name) (T.unpack time) (T.unpack desc)) (zip [1..] results)
-            
-            putStrLn "\nm. Main Menu"
-            putStrLn "b. Back"
-            putStrLn "q. Quit"
+            putStrLn "\nhome. Home Page\nb. Back\nexit. Exit Application\n"
+            printSeparator
             putStrLn "Enter option:"
             option <- getLine
             case option of
-                "m" -> mainMenu
+                "home" -> mainMenu
                 "b" -> searchBySeverity mainMenu
-                "q" -> return ()
+                "exit" -> exitApp
                 _ -> do
-                    putStrLn "Invalid option."
+                    putStrLn "\nPlease select an option from the given list."
                     performSeveritySearch severity mainMenu

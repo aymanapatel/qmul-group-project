@@ -7,7 +7,10 @@ module Actions.Search.Common (
     findBestOption,
     findWorstOption,
     fetchRoadDetailedStatus,
-    displayRoadDetailedStatus
+    fetchRoadDetailedStatus,
+    displayRoadDetailedStatus,
+    exitApp,
+    printSeparator
 ) where
 
 import Database.SQLite.Simple (open, close, query, Only(..))
@@ -16,25 +19,26 @@ import Text.Printf (printf)
 import Text.Read (readMaybe)
 import qualified Database as DB
 import Types (Disruption(..), RoadDetailedDisplayData(..))
-import Utils.Display (bold, colorizeSeverity)
+import Utils.Display (bold, colorizeSeverity, box)
 
 -- | Displays a list of roads and allows selection.
 -- Takes `searchAgain`, `mainMenu`, `back` as actions.
 displayResults :: [(T.Text, T.Text)] -> IO () -> IO () -> IO () -> IO ()
 displayResults results searchAgain mainMenu back = do
-    putStrLn "Select a road:"
+    putStrLn "\nPlease select a road to view its details:"
     mapM_ (\(i, (rid, name)) -> printf "%d. %s (%s)\n" (i :: Int) name rid) (zip [1..] results)
-    putStrLn "\ns. Search again"
-    putStrLn "m. Main Menu"
-    putStrLn "b. Back"
-    putStrLn "q. Quit"
+    putStrLn "\n s. Search again"
+    putStrLn "\n b. Back"
+    putStrLn "\n \"home\" to return to the home page"
+    putStrLn "\n \"exit\" to exit the application"
+    printSeparator
     putStrLn "\n\nEnter option:"
     input <- getLine
     case input of
         "s" -> searchAgain
-        "m" -> mainMenu
+        "home" -> mainMenu
         "b" -> back
-        "q" -> return ()
+        "exit" -> exitApp
         _ -> do
             let index = readMaybe input :: Maybe Int
             case index of
@@ -43,20 +47,20 @@ displayResults results searchAgain mainMenu back = do
                     putStrLn $ "\nSelected: " ++ T.unpack name
                     printRoadStatus rid mainMenu
                     promptContinuation mainMenu
-                _ -> putStrLn "Invalid selection."
+                _ -> putStrLn "Invalid selection. Please choose from the available options."
 
 -- | Prompts user to check another road or quit.
 -- Takes `mainMenu` action.
 promptContinuation :: IO () -> IO ()
 promptContinuation mainMenu = do
     putStrLn "\n"
-    putStrLn "If you want to check another road, enter 'y' or 'Y'. Otherwise, enter 'q' or 'Q'."
+    printSeparator
+    putStrLn "Would you like to check another road? (y/N) or type 'exit' to quit."
     choice <- getLine
     case choice of
         "y" -> mainMenu
         "Y" -> mainMenu
-        "q" -> return ()
-        "Q" -> return ()
+        "exit" -> exitApp
         _ -> return ()
 
 -- | Fetches aggregated detailed status for a road.
@@ -140,13 +144,13 @@ printRoadStatus :: T.Text -> IO () -> IO ()
 printRoadStatus rid _ = do
     maybeData <- fetchRoadDetailedStatus rid
     case maybeData of
-        Nothing -> putStrLn "No status data available."
+        Nothing -> putStrLn "Status information is currently unavailable."
         Just dataVal -> displayRoadDetailedStatus dataVal
 
 -- | Displays results with distance details (for coordinate search).
 displayResultsWithDetails :: [(T.Text, T.Text, Double, T.Text, T.Text)] -> IO () -> IO () -> IO () -> IO ()
 displayResultsWithDetails results searchAgain mainMenu back = do
-    putStrLn "\nNearest Roads:"
+    putStrLn "\nClosest Roads Found:"
     printf "%-4s %-25s %-15s %-15s %-30s\n" ("No." :: String) ("Name" :: String) ("Distance" :: String) ("Severity" :: String) ("Status" :: String)
     putStrLn $ replicate 95 '-'
     mapM_ (\(i, (_, name, dist, sev, desc)) -> 
@@ -163,28 +167,32 @@ displayResultsWithDetails results searchAgain mainMenu back = do
     
     putStrLn "\n--- Recommendations ---"
     case bestOption of
-        Just (name, _, _, _) -> putStrLn $ "Best Option: " ++ T.unpack name ++ " (Closest road with Good Service)"
-        Nothing -> putStrLn "Best Option: None (No nearby roads with Good Service)"
+        Just (name, _, _, _) -> putStrLn $ "Recommended Route: " ++ T.unpack name ++ " (Closest road with Good Service)"
+        Nothing -> putStrLn "Recommended Route: None (No nearby roads with Good Service)"
         
     case worstOption of
-        Just (name, _, sev, _) -> putStrLn $ "Worst Option: " ++ T.unpack name ++ " (Avoid - " ++ T.unpack sev ++ " Service)"
+        Just (name, _, sev, _) -> putStrLn $ "Route to Avoid: " ++ T.unpack name ++ " (Avoid - " ++ T.unpack sev ++ " Service)"
         Nothing -> return ()
 
     putStrLn "-----------------------"
-    
+
     -- Simple Navigation Menu (No Selection)
-    putStrLn "\nm. Main Menu"
-    putStrLn "b. Back"
-    putStrLn "q. Quit"
+    let menuOptions = [ "s. Search again"
+                      , "b. Back"
+                      , "\"home\" to return to the home page"
+                      , "\"exit\" to exit the application"
+                      ]
+    mapM_ putStrLn (box menuOptions)
+    printSeparator
     putStrLn "Enter option:"
     
     input <- getLine
     case input of
-        "m" -> mainMenu
+        "home" -> mainMenu
         "b" -> back
-        "q" -> return ()
+        "exit" -> exitApp
         _ -> do
-            putStrLn "Invalid option."
+            putStrLn "Invalid selection. Please choose from the available options."
             displayResultsWithDetails results searchAgain mainMenu back
 
 findBestOption :: [(T.Text, T.Text, Double, T.Text, T.Text)] -> Maybe (T.Text, Double, T.Text, T.Text)
@@ -200,3 +208,14 @@ findWorstOption results =
     in case badRoads of
         [] -> Nothing
         ((_, name, dist, sev, desc):_) -> Just (name, dist, sev, desc)
+
+-- | Prints exit message.
+exitApp :: IO ()
+exitApp = do
+    putStrLn "\n********************************************************************************"
+    putStrLn "*                                                                              *"
+    putStrLn "*   Thanks for using the application. Happy to help you again.                 *"
+    putStrLn "*                            !!Cheers!!                                        *"
+    putStrLn "********************************************************************************"
+printSeparator :: IO ()
+printSeparator = putStrLn $ replicate 50 '-'
