@@ -14,16 +14,15 @@ searchBySeverity mainMenu = do
     putStrLn "1. Good"
     putStrLn "2. Serious"
     putStrLn "3. Severe"
-    putStrLn "#. Back to Main Menu"
+    putStrLn "\nb. Back"
     putStrLn "q. Quit"
-    putStrLn "Enter option:"
+    putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
         "1" -> performSeveritySearch "Good" mainMenu
         "2" -> performSeveritySearch "Serious" mainMenu
         "3" -> performSeveritySearch "Severe" mainMenu
-        "#" -> mainMenu
-        "*" -> mainMenu -- Assuming * goes back to main menu here too
+        "b" -> mainMenu
         "q" -> return ()
         _ -> do
             putStrLn "Invalid option."
@@ -42,14 +41,14 @@ performSeveritySearch severity mainMenu = do
             putStrLn $ replicate 90 '-'
             mapM_ (\(i, (_, name, desc, time)) -> printf ("%-5d %-30s %-25s %-30s\n" :: String) (i :: Int) (T.unpack name) (T.unpack time) (T.unpack desc)) (zip [1..] results)
             
-            putStrLn "\n#. Back to Main Menu"
-            putStrLn "*. Back"
+            putStrLn "\nm. Main Menu"
+            putStrLn "b. Back"
             putStrLn "q. Quit"
             putStrLn "Enter option:"
             option <- getLine
             case option of
-                "#" -> mainMenu
-                "*" -> searchBySeverity mainMenu
+                "m" -> mainMenu
+                "b" -> searchBySeverity mainMenu
                 "q" -> return ()
                 _ -> do
                     putStrLn "Invalid option."

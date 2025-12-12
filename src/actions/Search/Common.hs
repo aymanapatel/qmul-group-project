@@ -24,16 +24,16 @@ displayResults :: [(T.Text, T.Text)] -> IO () -> IO () -> IO () -> IO ()
 displayResults results searchAgain mainMenu back = do
     putStrLn "Select a road:"
     mapM_ (\(i, (rid, name)) -> printf "%d. %s (%s)\n" (i :: Int) name rid) (zip [1..] results)
-    putStrLn "s. Search again"
-    putStrLn "#. Back to Main Menu"
-    putStrLn "*. Back"
+    putStrLn "\ns. Search again"
+    putStrLn "m. Main Menu"
+    putStrLn "b. Back"
     putStrLn "q. Quit"
-    putStrLn "Enter number or option:"
+    putStrLn "\n\nEnter option:"
     input <- getLine
     case input of
         "s" -> searchAgain
-        "#" -> mainMenu
-        "*" -> back
+        "m" -> mainMenu
+        "b" -> back
         "q" -> return ()
         _ -> do
             let index = readMaybe input :: Maybe Int
@@ -50,11 +50,13 @@ displayResults results searchAgain mainMenu back = do
 promptContinuation :: IO () -> IO ()
 promptContinuation mainMenu = do
     putStrLn "\n"
-    putStrLn "Do you want to check the status for any other road as well? or quit? (y/N)"
+    putStrLn "If you want to check another road, enter 'y' or 'Y'. Otherwise, enter 'q' or 'Q'."
     choice <- getLine
     case choice of
         "y" -> mainMenu
         "Y" -> mainMenu
+        "q" -> return ()
+        "Q" -> return ()
         _ -> return ()
 
 -- | Fetches aggregated detailed status for a road.
@@ -171,15 +173,15 @@ displayResultsWithDetails results searchAgain mainMenu back = do
     putStrLn "-----------------------"
     
     -- Simple Navigation Menu (No Selection)
-    putStrLn "\n#. Back to Main Menu"
-    putStrLn "*. Back"
+    putStrLn "\nm. Main Menu"
+    putStrLn "b. Back"
     putStrLn "q. Quit"
     putStrLn "Enter option:"
     
     input <- getLine
     case input of
-        "#" -> mainMenu
-        "*" -> back
+        "m" -> mainMenu
+        "b" -> back
         "q" -> return ()
         _ -> do
             putStrLn "Invalid option."

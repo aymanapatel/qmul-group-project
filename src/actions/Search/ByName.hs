@@ -9,21 +9,21 @@ import Actions.Search.Common (displayResults, printRoadStatus, promptContinuatio
 
 searchByName :: IO () -> IO ()
 searchByName mainMenu = do
-    putStrLn "\nEnter road name or '#' to go back:"
+    putStrLn "\nEnter road name or 'b' to go back:"
     queryStr <- getLine
     case queryStr of
-        "#" -> mainMenu
+        "b" -> mainMenu
         _ -> do
             results <- DB.searchRoads (T.pack queryStr)
             case results of
                 [] -> do
                     putStrLn "No Roads found by this name. Showing all roads:"
                     allRoads <- DB.getAllRoads
-                    displayResults allRoads (searchByName mainMenu) mainMenu (searchByName mainMenu)
+                    displayResults allRoads (searchByName mainMenu) mainMenu mainMenu
                 
                 [(rid, name)] -> do
                     putStrLn $ "\nFound one road: " ++ T.unpack name
                     printRoadStatus rid mainMenu
                     promptContinuation mainMenu
                     
-                _ -> displayResults results (searchByName mainMenu) mainMenu (searchByName mainMenu)
+                _ -> displayResults results (searchByName mainMenu) mainMenu mainMenu
