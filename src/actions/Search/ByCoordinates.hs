@@ -18,14 +18,14 @@ searchByCoordinates mainMenu = do
     putStrLn "\n--- Search by Coordinates Menu ---"
     putStrLn "1. Select from Predefined List"
     putStrLn "2. Enter Coordinates Manually"
-    putStrLn "#. Back to Main Menu"
+    putStrLn "\nm. Main Menu"
     putStrLn "q. Quit"
-    putStrLn "Enter option:"
+    putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
         "1" -> searchByPredefinedList mainMenu
         "2" -> searchByManualCoordinates mainMenu
-        "#" -> mainMenu
+        "m" -> mainMenu
         "q" -> return ()
         _ -> do
             putStrLn "Invalid option."
@@ -47,12 +47,12 @@ searchByPredefinedList mainMenu = do
                 Right entries -> do
                     putStrLn "\nSelect a location:"
                     mapM_ (\(i, entry) -> printf "%d. %s (%s) - %s\n" (i :: Int) (T.unpack $ coordCorridorName entry) (T.unpack $ coordArea entry) (T.unpack $ coordPersonName entry)) (zip [1..] entries)
-                    putStrLn "#. Back"
+                    putStrLn "\nb. Back"
                     putStrLn "q. Quit"
-                    putStrLn "Enter number:"
+                    putStrLn "\n\nEnter option:"
                     input <- getLine
                     case input of
-                        "#" -> searchByCoordinates mainMenu
+                        "b" -> searchByCoordinates mainMenu
                         "q" -> return ()
                         _ -> case readMaybe input :: Maybe Int of
                             Just idx | idx > 0 && idx <= length entries -> do
@@ -65,10 +65,10 @@ searchByPredefinedList mainMenu = do
 
 searchByManualCoordinates :: IO () -> IO ()
 searchByManualCoordinates mainMenu = do
-    putStrLn "\nEnter Longitude (e.g., -0.1278) or '#' to go back:"
+    putStrLn "\nEnter Longitude (e.g., -0.1278) or 'b' to go back:"
     lonStr <- getLine
     case lonStr of
-        "#" -> searchByCoordinates mainMenu
+        "b" -> searchByCoordinates mainMenu
         _ -> case readMaybe lonStr :: Maybe Double of
             Nothing -> do
                 putStrLn "Invalid longitude."

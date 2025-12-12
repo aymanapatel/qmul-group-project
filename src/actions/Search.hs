@@ -14,8 +14,8 @@ searchLoop = do
     putStrLn "1. Search by road name"
     putStrLn "2. Search by severity level"
     putStrLn "3. Search by coordinates"
-    putStrLn "q. Quit"
-    putStrLn "Enter option:"
+    putStrLn "\nq. Quit"
+    putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
         "1" -> searchByName searchLoop
