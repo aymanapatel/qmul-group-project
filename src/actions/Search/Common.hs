@@ -55,13 +55,13 @@ promptContinuation :: IO () -> IO ()
 promptContinuation mainMenu = do
     putStrLn "\n"
     printSeparator
-    putStrLn "Would you like to check another road? (y/N) or type 'exit' to quit."
+    putStrLn "Would you like to check another road? Type 'y' to continue or enter to go back to the home page."
     choice <- getLine
     case choice of
         "y" -> mainMenu
         "Y" -> mainMenu
-        "exit" -> exitApp
-        _ -> return ()
+        "" -> mainMenu
+        _ -> mainMenu
 
 -- | Fetches aggregated detailed status for a road.
 -- Returns Maybe RoadDetailedDisplayData
@@ -152,7 +152,7 @@ displayResultsWithDetails :: [(T.Text, T.Text, Double, T.Text, T.Text)] -> IO ()
 displayResultsWithDetails results searchAgain mainMenu back = do
     putStrLn "\nClosest Roads Found:"
     printf "%-4s %-25s %-15s %-15s %-30s\n" ("No." :: String) ("Name" :: String) ("Distance" :: String) ("Severity" :: String) ("Status" :: String)
-    putStrLn $ replicate 95 '-'
+    putStrLn $ replicate 80 '-'
     mapM_ (\(i, (_, name, dist, sev, desc)) -> 
         printf "%-4d %-25s %-15s %-15s %-30s\n" 
             (i :: Int) 
