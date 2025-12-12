@@ -4,6 +4,7 @@ module Database (
     saveRoads,
     saveDisruptions,
     searchRoads,
+    searchRoadsByFirstChar,
     getLatestStatus,
     getAllRoads,
     getRoadsBySeverity,
@@ -107,6 +108,17 @@ searchRoads searchQuery = do
     conn <- open "tfl.db"
     let sql = "SELECT id, displayName FROM roads WHERE displayName LIKE ? OR id LIKE ?"
     let pattern = "%" <> searchQuery <> "%"
+    results <- query conn (Query (T.pack sql)) (pattern, pattern) :: IO [(Text, Text)]
+    close conn
+    return results
+
+-- | Searches for roads by name (first character match).
+-- Returns a list of (Road ID, Display Name).
+searchRoadsByFirstChar :: Text -> IO [(Text, Text)]
+searchRoadsByFirstChar searchQuery = do
+    conn <- open "tfl.db"
+    let sql = "SELECT id, displayName FROM roads WHERE displayName LIKE ? OR id LIKE ?"
+    let pattern = searchQuery <> "%"
     results <- query conn (Query (T.pack sql)) (pattern, pattern) :: IO [(Text, Text)]
     close conn
     return results
