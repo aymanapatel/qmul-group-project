@@ -170,9 +170,20 @@ displayResultsWithDetails results searchAgain mainMenu back = do
 
     putStrLn "-----------------------"
     
-    -- Prompt for selection (using standard display logic mapping)
-    let displayable = map (\(rid, name, _, _, _) -> (rid, name)) results
-    displayResults displayable searchAgain mainMenu back
+    -- Simple Navigation Menu (No Selection)
+    putStrLn "\n#. Back to Main Menu"
+    putStrLn "*. Back"
+    putStrLn "q. Quit"
+    putStrLn "Enter option:"
+    
+    input <- getLine
+    case input of
+        "#" -> mainMenu
+        "*" -> back
+        "q" -> return ()
+        _ -> do
+            putStrLn "Invalid option."
+            displayResultsWithDetails results searchAgain mainMenu back
 
 findBestOption :: [(T.Text, T.Text, Double, T.Text, T.Text)] -> Maybe (T.Text, Double, T.Text, T.Text)
 findBestOption results = 
