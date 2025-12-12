@@ -54,13 +54,13 @@ searchByPredefinedList mainMenu = do
                 Right entries -> do
                     putStrLn "\nSelect a location:"
                     mapM_ (\(i, entry) -> printf "%d. %s (%s) - %s\n" (i :: Int) (T.unpack $ coordCorridorName entry) (T.unpack $ coordArea entry) (T.unpack $ coordPersonName entry)) (zip [1..] entries)
-                    putStrLn "\nb. Back\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
+                    putStrLn "\n\"prev\" to go to the previous menu\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
                     printSeparator
                     putStrLn "\n\nEnter option:"
                     input <- getLine
                     case input of
                         "home" -> mainMenu
-                        "b" -> searchByCoordinates mainMenu
+                        "prev" -> searchByCoordinates mainMenu
                         "exit" -> exitApp
                         _ -> case readMaybe input :: Maybe Int of
                             Just idx | idx > 0 && idx <= length entries -> do
@@ -74,10 +74,10 @@ searchByPredefinedList mainMenu = do
 searchByManualCoordinates :: IO () -> IO ()
 searchByManualCoordinates mainMenu = do
     printSeparator
-    putStrLn "\nPlease enter Longitude (e.g., -0.1278) or press 'b' to return:"
+    putStrLn "\nPlease enter Longitude (e.g., -0.1278) or enter 'prev' to return to the previous menu:"
     lonStr <- getLine
     case lonStr of
-        "b" -> searchByCoordinates mainMenu
+        "prev" -> searchByCoordinates mainMenu
         _ -> case readMaybe lonStr :: Maybe Double of
             Nothing -> do
                 putStrLn "The longitude entered is invalid. Please try again."

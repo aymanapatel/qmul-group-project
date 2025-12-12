@@ -10,10 +10,10 @@ import Actions.Search.Common (displayResults, printRoadStatus, promptContinuatio
 searchByName :: IO () -> IO ()
 searchByName mainMenu = do
     printSeparator
-    putStrLn "\nPlease enter a road name or press 'b' to return:"
+    putStrLn "\nPlease enter a road name or enter 'prev' to return to the previous menu:"
     queryStr <- getLine
     case queryStr of
-        "b" -> mainMenu
+        "prev" -> mainMenu
         _ -> do
             -- 1. Try exact/substring search
             results <- DB.searchRoads (T.pack queryStr)

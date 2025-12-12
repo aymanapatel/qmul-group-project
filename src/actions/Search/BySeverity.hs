@@ -18,7 +18,7 @@ searchBySeverity mainMenu = do
                       , "2. Serious"
                       , "3. Severe"
                       , ""
-                      , "b. Back"
+                      , "\"prev\" to go to the previous page"
                       , "\"home\" to return to the home page"
                       , "\"exit\" to exit the application"
                       ]
@@ -29,7 +29,7 @@ searchBySeverity mainMenu = do
         "1" -> performSeveritySearch "Good" mainMenu
         "2" -> performSeveritySearch "Serious" mainMenu
         "3" -> performSeveritySearch "Severe" mainMenu
-        "b" -> mainMenu
+        "prev" -> mainMenu
         "home" -> mainMenu
         "exit" -> exitApp
         _ -> do
@@ -48,13 +48,13 @@ performSeveritySearch severity mainMenu = do
             printf ("%-5s %-30s %-25s %-30s\n" :: String) ("No." :: String) ("Road Name" :: String) ("Timing" :: String) ("Description" :: String)
             putStrLn $ replicate 90 '-'
             mapM_ (\(i, (_, name, desc, time)) -> printf ("%-5d %-30s %-25s %-30s\n" :: String) (i :: Int) (T.unpack name) (T.unpack time) (T.unpack desc)) (zip [1..] results)
-            putStrLn "\nb. Back\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
+            putStrLn "\n\"prev\" to go to the previous page\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
             printSeparator
             putStrLn "Enter option:"
             option <- getLine
             case option of
                 "home" -> mainMenu
-                "b" -> searchBySeverity mainMenu
+                "prev" -> searchBySeverity mainMenu
                 "exit" -> exitApp
                 _ -> do
                     putStrLn "\nPlease select an option from the given list."
