@@ -8,6 +8,7 @@ module Types (
     DatabaseDump(..)
 ) where
 
+import Data.Text (Text)
 import Data.Aeson hiding (Value)
 import Data.Aeson.Types (Parser, Value)
 import qualified Data.ByteString.Lazy.Char8 as LBS
@@ -15,13 +16,12 @@ import qualified Data.Text as T
 import Database.SQLite.Simple.FromRow
 import Database.SQLite.Simple.ToRow
 import Database.SQLite.Simple (Only(..))
-import Data.Text (Text)
 
 -- | Represents a Road from the TfL API.
 -- Contains the unique identifier, display name, and current status severity.
 data Road = Road
     { roadId :: Text -- ^ The unique identifier of the road (e.g., "a1")
-    , roadDisplayName :: Text -- ^ The human-readable name of the road (e.g., "A1")
+    , roadDisplayName :: Text -- ^ The name of the road (e.g., "A1")
     , roadStatusSeverity :: Text -- ^ The severity of the current status (e.g., "Good", "Serious Delays")
     , roadStatusSeverityDescription :: Text -- ^ A detailed description of the status severity
     , roadStatusStartDate :: Maybe Text -- ^ Start date of the status
@@ -50,13 +50,13 @@ instance FromJSON Road where
 -- | Represents a historical log of a road's status.
 -- Stored in the database for trend analysis.
 data RoadStatusLog = RoadStatusLog
-    { logId :: Maybe Int -- ^ The primary key in the database (Nothing for new logs)
-    , logRoadId :: Text -- ^ Foreign key referencing the Road's ID
+    { logId :: Maybe Int -- ^ Primary key in the database (Null for new logs)
+    , logRoadId :: Text -- ^ Foreign key referencing the RoadId
     , logStatusSeverity :: Text -- ^ The severity status at the time of logging
     , logStatusDescription :: Text -- ^ The description at the time of logging
     , logStatusStartDate :: Maybe Text -- ^ Start date of the status
     , logStatusEndDate :: Maybe Text -- ^ End date of the status
-    , logTimestamp :: Text -- ^ The timestamp of the log in ISO8601 format
+    , logTimestamp :: Text -- ^ The timestamp of the log
     } deriving (Show, Eq)
 
 instance ToJSON RoadStatusLog where
