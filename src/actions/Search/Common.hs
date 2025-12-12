@@ -28,9 +28,9 @@ displayResults results searchAgain mainMenu back = do
     putStrLn "\nPlease select a road to view its details:"
     mapM_ (\(i, (rid, name)) -> printf "%d. %s (%s)\n" (i :: Int) name rid) (zip [1..] results)
     putStrLn "\n s. Search again"
-    putStrLn "\n b. Back"
-    putStrLn "\n \"home\" to return to the home page"
-    putStrLn "\n \"exit\" to exit the application"
+    putStrLn "b. Back"
+    putStrLn "\"home\" to return to the home page"
+    putStrLn "\"exit\" to exit the application"
     printSeparator
     putStrLn "\n\nEnter option:"
     input <- getLine

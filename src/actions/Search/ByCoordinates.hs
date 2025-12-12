@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Actions.Search.ByCoordinates (
     searchByCoordinates
 ) where
@@ -55,7 +54,7 @@ searchByPredefinedList mainMenu = do
                 Right entries -> do
                     putStrLn "\nSelect a location:"
                     mapM_ (\(i, entry) -> printf "%d. %s (%s) - %s\n" (i :: Int) (T.unpack $ coordCorridorName entry) (T.unpack $ coordArea entry) (T.unpack $ coordPersonName entry)) (zip [1..] entries)
-                    putStrLn "\nhome. Home Page\nb. Back\nexit. Exit Application\n"
+                    putStrLn "\nb. Back\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
                     printSeparator
                     putStrLn "\n\nEnter option:"
                     input <- getLine

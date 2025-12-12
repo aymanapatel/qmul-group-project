@@ -48,7 +48,7 @@ performSeveritySearch severity mainMenu = do
             printf ("%-5s %-30s %-25s %-30s\n" :: String) ("No." :: String) ("Road Name" :: String) ("Timing" :: String) ("Description" :: String)
             putStrLn $ replicate 90 '-'
             mapM_ (\(i, (_, name, desc, time)) -> printf ("%-5d %-30s %-25s %-30s\n" :: String) (i :: Int) (T.unpack name) (T.unpack time) (T.unpack desc)) (zip [1..] results)
-            putStrLn "\nhome. Home Page\nb. Back\nexit. Exit Application\n"
+            putStrLn "\nb. Back\n\"home\" to return to the home page\n\"exit\" to exit the application\n"
             printSeparator
             putStrLn "Enter option:"
             option <- getLine
