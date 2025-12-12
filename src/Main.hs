@@ -12,6 +12,7 @@ import Text.Printf (printf)
 import qualified Data.Text as T
 import Utils.Env (loadEnv, getEnvVar)
 import Actions.Search (searchLoop)
+import Actions.Journey (planJourney)
 
 main :: IO ()
 main = do
@@ -64,6 +65,8 @@ main = do
             
         ["search"] -> searchLoop
 
+        ["plan-my-journey"] -> planJourney
+
         ["report"] -> do
             putStrLn "Generating Road Reliability Report..."
             report <- getReliabilityReport
@@ -91,4 +94,4 @@ main = do
                 then putStrLn "No disruption data available."
                 else mapM_ (\(hour, count) -> printf "%-10s: %d disruptions\n" (T.unpack hour) count) hours
         
-        _ -> putStrLn "Usage: stack run -- [create|loaddata|dumpdata|report|search]"
+        _ -> putStrLn "Usage: stack run -- [create|loaddata|dumpdata|report|search|plan-my-journey]"

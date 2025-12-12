@@ -41,6 +41,7 @@ executable tfl-app
                      , Actions.Search.ByName
                      , Actions.Search.BySeverity
                      , Actions.Search.ByCoordinates
+                     , Actions.Journey
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
