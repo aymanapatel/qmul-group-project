@@ -90,12 +90,12 @@ selectPredefinedLocation = do
                         (T.unpack $ coordPersonName entry)) (zip [1..] entries)
                     
                     printSeparator
-                    putStrLn "Enter number to select, or 'b' to go back:"
+                    putStrLn "Enter number to select, or 'prev' to go to the previous menu:"
                     input <- getLine
                     
                     case input of
                         "exit" -> exitApp >> exitSuccess
-                        "b" -> selectLocation
+                        "prev" -> selectLocation
                         _ -> case readMaybe input :: Maybe Int of
                             Just idx | idx > 0 && idx <= length entries -> do
                                 let entry = entries !! (idx - 1)
@@ -109,9 +109,9 @@ selectPredefinedLocation = do
 selectManualLocation :: IO (Maybe (Double, Double, String))
 selectManualLocation = do
     putStrLn "\n[Manual Entry]"
-    putStrLn "Please enter the Longitude (e.g., -0.1278) or 'b' to go back:"
+    putStrLn "Please enter the Longitude (e.g., -0.1278) or 'prev' to go back:"
     lonStr <- getLine
-    if lonStr == "b" then selectLocation else
+    if lonStr == "prev" then selectLocation else
         case lonStr of
             "exit" -> exitApp >> exitSuccess
             _ -> case readMaybe lonStr :: Maybe Double of

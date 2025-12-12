@@ -28,7 +28,7 @@ displayResults results searchAgain mainMenu back = do
     putStrLn "\nPlease select a road to view its details:"
     mapM_ (\(i, (rid, name)) -> printf "%d. %s (%s)\n" (i :: Int) name rid) (zip [1..] results)
     putStrLn "\n s. Search again"
-    putStrLn "b. Back"
+    putStrLn "\"prev\" to go to the previous menu"
     putStrLn "\"home\" to return to the home page"
     putStrLn "\"exit\" to exit the application"
     printSeparator
@@ -37,7 +37,7 @@ displayResults results searchAgain mainMenu back = do
     case input of
         "s" -> searchAgain
         "home" -> mainMenu
-        "b" -> back
+        "prev" -> back
         "exit" -> exitApp
         _ -> do
             let index = readMaybe input :: Maybe Int
@@ -178,7 +178,7 @@ displayResultsWithDetails results searchAgain mainMenu back = do
 
     -- Simple Navigation Menu (No Selection)
     let menuOptions = [ "s. Search again"
-                      , "b. Back"
+                      , "\"prev\" to go to the previous page"
                       , "\"home\" to return to the home page"
                       , "\"exit\" to exit the application"
                       ]
@@ -189,7 +189,7 @@ displayResultsWithDetails results searchAgain mainMenu back = do
     input <- getLine
     case input of
         "home" -> mainMenu
-        "b" -> back
+        "prev" -> back  
         "exit" -> exitApp
         _ -> do
             putStrLn "Invalid selection. Please choose from the available options."

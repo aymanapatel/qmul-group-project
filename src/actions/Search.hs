@@ -9,7 +9,7 @@ import Actions.Search.ByCoordinates (searchByCoordinates)
 import Actions.Search.Common (exitApp, printSeparator)
 import Utils.Display (box)
 
--- | Main loop for the search menu.
+-- | Main entry point for the search module.
 searchLoop :: IO ()
 searchLoop = do
     putStrLn "\n********************************************************************************"
@@ -22,7 +22,11 @@ searchLoop = do
     putStrLn "*                       *** By Group 27 ***                                    *"
     putStrLn "*                                                                              *"
     putStrLn "********************************************************************************"
-    
+    runSearchMenu
+
+-- | Displays the search menu and handles user input.
+runSearchMenu :: IO ()
+runSearchMenu = do
     putStrLn "\n"
     let menuOptions = [ ""
                         , "Search Menu"
@@ -37,10 +41,10 @@ searchLoop = do
     putStrLn "\n\nEnter option:"
     option <- getLine
     case option of
-        "1" -> searchByName searchLoop
-        "2" -> searchBySeverity searchLoop
-        "3" -> searchByCoordinates searchLoop
+        "1" -> searchByName runSearchMenu
+        "2" -> searchBySeverity runSearchMenu
+        "3" -> searchByCoordinates runSearchMenu
         "exit" -> exitApp
         _ -> do
             putStrLn "\nPlease select an option from the given list."
-            searchLoop
+            runSearchMenu
