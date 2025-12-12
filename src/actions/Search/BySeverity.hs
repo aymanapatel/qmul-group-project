@@ -18,8 +18,8 @@ searchBySeverity mainMenu = do
                       , "2. Serious"
                       , "3. Severe"
                       , ""
-                      , "\"home\" to return to the home page"
                       , "b. Back"
+                      , "\"home\" to return to the home page"
                       , "\"exit\" to exit the application"
                       ]
     mapM_ putStrLn (box menuOptions)
@@ -30,6 +30,7 @@ searchBySeverity mainMenu = do
         "2" -> performSeveritySearch "Serious" mainMenu
         "3" -> performSeveritySearch "Severe" mainMenu
         "b" -> mainMenu
+        "home" -> mainMenu
         "exit" -> exitApp
         _ -> do
             putStrLn "\nPlease select an option from the given list."
