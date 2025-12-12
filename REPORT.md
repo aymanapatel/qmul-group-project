@@ -10,6 +10,8 @@ Key capabilities include:
 2.  **Intelligent Search**: Allows users to find roads by name, current severity, or geospatial proximity.
 3.  **Smart Recommendations**: A recommendation engine that calculates distances to nearby roads and suggests the optimal route (closest "Good Service" road) while warning against severe disruptions.
 4.  **Trend Analysis**: Generates reports on reliability percentages and temporal traffic patterns.
+5.  **Journey Planning**: A dedicated wizard that checks for disruptions between a user-selected start and end point.
+6.  **Data Export**: Capability to dump the entire database to a JSON file for external usage or backup.
 
 ---
 
@@ -28,13 +30,14 @@ stack build
 
 ### Key Commands
 
-| Command                 | Action                                                                                   |
-| :---------------------- | :--------------------------------------------------------------------------------------- |
-| `stack run -- create`   | **Initialize**: Creates `tfl.db` with optimized schema (`roads`, `logs`, `disruptions`). |
-| `stack run -- loaddata` | **Harvest**: Fetches live data (status + geometry) and updates the database.             |
-| `stack run -- search`   | **Explore**: Launches the **Interactive CLI** for searching and recommendations.         |
-| `stack run -- report`   | **Analyze**: Displays reliability statistics and "Worst Day/Hour" trends.                |
-| `stack run -- dumpdata` | **Export**: Dumps all logs to `data.json`.                                               |
+| Command                        | Action                                                                                   |
+| :----------------------------- | :--------------------------------------------------------------------------------------- |
+| `stack run -- create`          | **Initialize**: Creates `tfl.db` with optimized schema (`roads`, `logs`, `disruptions`). |
+| `stack run -- loaddata`        | **Harvest**: Fetches live data (status + geometry) and updates the database.             |
+| `stack run -- search`          | **Explore**: Launches the **Interactive CLI** for searching and recommendations.         |
+| `stack run -- plan-my-journey` | **Plan**: Check disruptions between two points (Start & Destination).                    |
+| `stack run -- report`          | **Analyze**: Displays reliability statistics and "Worst Day/Hour" trends.                |
+| `stack run -- dumpdata`        | **Export**: Dumps all logs to `data.json`.                                               |
 
 ---
 
@@ -81,3 +84,13 @@ In addition to the recommendation engine, we implemented a **Traffic Trend Analy
 
 - **Aggregations**: Uses advanced SQL grouping to calculate reliability percentages.
 - **Temporal Analysis**: Maps timestamps to days of the week to identify the "Worst Day" and "Worst Hour" for London traffic, providing actionable insights for journey planning.
+
+## Extra Feature: Journey Planner
+
+We implemented a dedicated **Journey Planner** (`Actions/Journey.hs`) that abstracts the complexity of manual searching:
+
+- **Wizard Interface**: Guides the user step-by-step to select a **Start Point** and **Destination**.
+- **Flexible Input**: Users can choose from **Saved Locations** (e.g., "Home", "University") or enter **Custom Coordinates**.
+- **Route Analysis**:
+  - Checks the status of the nearest major road to _both_ the start and end points.
+  - usage of **smart pattern matching** to recommend if the route is clear ("Good Service") or warn about potential delays (e.g., "Severe Delays" at destination).

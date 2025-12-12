@@ -104,7 +104,15 @@ stack run -- report
 
 - **Reliability Score**: % of time a road has "Good Service".
 
-### 5. Data Export
+### 5. Plan My Journey
+
+Check for disruptions between a start and end point.
+
+```bash
+stack run -- plan-my-journey
+```
+
+### 6. Data Export
 
 Dump the entire database to a JSON file for external use.
 
@@ -145,47 +153,47 @@ The file consists of 3 tables: `roads`, `road_status_logs` and `road_disruptions
 
 ### Table: `roads`
 
-| **Column Name** | **Type** | **Description** |
-| --- | --- | --- |
-| id | TEXT | Primary key to represent the code |
-| displayName | TEXT | Human readable form of road |
-| url | TEXT | API resource path. Required when calling the TfL API |
-| bounds | TEXT | Find the bound of the road. It contains an array of latitude and longitude. It has 2 pairs that define the rectangular area. |
-| envelope | TEXT | Provides the coordinates in terms of polygon. |
-| lat | REAL | Represents the Latitude |
-| lon | REAL | Represents the longitude. |
+| **Column Name** | **Type** | **Description**                                                                                                              |
+| --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| id              | TEXT     | Primary key to represent the code                                                                                            |
+| displayName     | TEXT     | Human readable form of road                                                                                                  |
+| url             | TEXT     | API resource path. Required when calling the TfL API                                                                         |
+| bounds          | TEXT     | Find the bound of the road. It contains an array of latitude and longitude. It has 2 pairs that define the rectangular area. |
+| envelope        | TEXT     | Provides the coordinates in terms of polygon.                                                                                |
+| lat             | REAL     | Represents the Latitude                                                                                                      |
+| lon             | REAL     | Represents the longitude.                                                                                                    |
 
 ### Table: `road_status_logs`
 
-| **Column Name** | **Type** | **Description** |
-| --- | --- | --- |
-| id | TEXT | Primary key |
-| road_id | TEXT | Foreign key to roads table’s id |
-| severity | TEXT | Severity level of the road status:
-Good, Serious, Severe |
-| description | TEXT | Description of the road status |
-| start_date | TEXT | Start date of the status |
-| end_date | TEXT | End date of the status |
-| timestamp | TEXT | Timestamp when the log was created |
+| **Column Name**       | **Type** | **Description**                    |
+| --------------------- | -------- | ---------------------------------- |
+| id                    | TEXT     | Primary key                        |
+| road_id               | TEXT     | Foreign key to roads table’s id    |
+| severity              | TEXT     | Severity level of the road status: |
+| Good, Serious, Severe |
+| description           | TEXT     | Description of the road status     |
+| start_date            | TEXT     | Start date of the status           |
+| end_date              | TEXT     | End date of the status             |
+| timestamp             | TEXT     | Timestamp when the log was created |
 
 ### Table: **`road_disruptions`**
 
-| **Column Name** | **Type** | Description |
-| --- | --- | --- |
-| id | TEXT | Primary Key |
-| url | TEXT | URL of disruption id:
-It is of the format `/Road/All/Disruption/<id>` |
-| location | TEXT | Location of the disruption |
-| description | TEXT | Description of the disruption |
-| status | TEXT | Status of the disruption |
-| severity | TEXT | Severity of the disruption:
-Moderate, Minimal and No Impact |
-| point | TEXT | Single point which highlights the central location of the disruption |
-| geometry | TEXT | Represents the geographic data affected by the disruption |
-| lat | REAL | Represents the Latitude |
-| lon | REAL | Represents the Longitude |
-| nearest_road_id | TEXT | A calculated value that stores the nearest road to the given disruption. |
-| timestamp | TEXT | Timestamp |
+| **Column Name**                                 | **Type** | Description                                                              |
+| ----------------------------------------------- | -------- | ------------------------------------------------------------------------ |
+| id                                              | TEXT     | Primary Key                                                              |
+| url                                             | TEXT     | URL of disruption id:                                                    |
+| It is of the format `/Road/All/Disruption/<id>` |
+| location                                        | TEXT     | Location of the disruption                                               |
+| description                                     | TEXT     | Description of the disruption                                            |
+| status                                          | TEXT     | Status of the disruption                                                 |
+| severity                                        | TEXT     | Severity of the disruption:                                              |
+| Moderate, Minimal and No Impact                 |
+| point                                           | TEXT     | Single point which highlights the central location of the disruption     |
+| geometry                                        | TEXT     | Represents the geographic data affected by the disruption                |
+| lat                                             | REAL     | Represents the Latitude                                                  |
+| lon                                             | REAL     | Represents the Longitude                                                 |
+| nearest_road_id                                 | TEXT     | A calculated value that stores the nearest road to the given disruption. |
+| timestamp                                       | TEXT     | Timestamp                                                                |
 
 ## 🔗 Credits & References
 
