@@ -2,7 +2,8 @@
 module Utils.Display (
     bold,
     colorizeSeverity,
-    box
+    box,
+    printSeparator
 ) where
 
 import qualified Data.Text as T
@@ -29,3 +30,7 @@ colorizeSeverity sevText s
     | sev == "Serious" || sev == "Severe" = "\ESC[31m" ++ s ++ "\ESC[0m" -- Red
     | otherwise = "\ESC[33m" ++ s ++ "\ESC[0m" -- Yellow (Warning/Other)
   where sev = T.unpack sevText
+
+-- | Prints a separator line
+printSeparator :: IO ()
+printSeparator = putStrLn $ replicate 50 '-'

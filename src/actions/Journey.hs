@@ -11,8 +11,8 @@ import Text.Read (readMaybe)
 import System.Directory (doesFileExist)
 import qualified Database as DB
 import Types (CoordinateEntry(..))
-import Actions.Search.Common (printSeparator, exitApp)
-import Utils.Display (box)
+import Actions.Search (exitApp)
+import Utils.Display (box, printSeparator)
 import System.Exit (exitSuccess)
 
 -- | Main entry point for the Journey Planner feature.
